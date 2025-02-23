@@ -21,6 +21,7 @@ public class ProductEntity {
     @Column(name = "id")
     private Long id;
 
+    @Nonnull
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private UserEntity owner;
