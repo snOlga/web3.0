@@ -16,13 +16,16 @@ public class ProductConverter {
     private UserConverter userConverter;
 
     public ProductEntity fromDTO(ProductDTO dto) {
+        if (dto == null || dto.getOwner() == null)
+            return null;
+
         return productRepository.findById(dto.getId()).get();
     }
 
     public ProductDTO fromEntity(ProductEntity entity) {
         return new ProductDTO(
-            entity.getId(),
-            userConverter.fromEntity(entity.getOwner()),
-            entity.getContent());
+                entity.getId(),
+                userConverter.fromEntity(entity.getOwner()),
+                entity.getContent());
     }
 }

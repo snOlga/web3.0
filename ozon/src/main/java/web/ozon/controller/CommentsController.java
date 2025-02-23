@@ -20,8 +20,10 @@ public class CommentsController {
     @Autowired
     private CommentService commentService;
 
-    @GetMapping("/{productId}")
-    public ResponseEntity<List<CommentDTO>> firstMethod(@PathVariable Long productId) {
-        return new ResponseEntity<>(commentService.getAllByProductId(productId), HttpStatus.OK);
+    @GetMapping("/{productId}/{from}/{to}")
+    public ResponseEntity<List<CommentDTO>> firstMethod(@PathVariable Long productId,
+            @PathVariable Integer from,
+            @PathVariable Integer to) {
+        return new ResponseEntity<>(commentService.getAllByProductId(productId, from, to), HttpStatus.OK);
     }
 }
