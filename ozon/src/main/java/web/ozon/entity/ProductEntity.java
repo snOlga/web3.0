@@ -23,8 +23,8 @@ public class ProductEntity {
 
     @Nonnull
     @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private UserEntity owner;
+    @JoinColumn(name = "seller_id")
+    private UserEntity seller;
 
     @Nonnull
     @Column(name = "content")

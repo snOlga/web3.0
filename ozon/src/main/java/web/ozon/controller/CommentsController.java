@@ -29,6 +29,7 @@ public class CommentsController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public ResponseEntity<CommentDTO> postComment(@RequestBody CommentDTO commentDTO) {
-        return new ResponseEntity<>(commentService.save(commentDTO), HttpStatus.CREATED);
+        CommentDTO result = commentService.save(commentDTO);
+        return new ResponseEntity<>(result, result != null ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST);
     }
 }

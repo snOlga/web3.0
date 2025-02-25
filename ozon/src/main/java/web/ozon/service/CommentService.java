@@ -40,9 +40,9 @@ public class CommentService {
     public CommentDTO save(CommentDTO commentDTO) {
         if (!validateComment(commentDTO))
             return null;
-        if(isRudeText(commentDTO.getContent()))
+        if (isRudeText(commentDTO.getContent()))
             return null;
-        
+
         return commentDTO;
     }
 
@@ -53,8 +53,7 @@ public class CommentService {
         if (!commentDTO.getAuthor().getLogin().equals(currentPrincipalName))
             return false;
 
-        if (commentDTO.getAuthor().getId() == null)
-            commentDTO.setAuthor(userConverter.fromEntity(userConverter.fromDTO(commentDTO.getAuthor())));
+        commentDTO.setAuthor(userConverter.fromEntity(userConverter.fromDTO(commentDTO.getAuthor())));
 
         if (commentDTO.getProduct().getId() == null)
             return false;
@@ -69,6 +68,7 @@ public class CommentService {
     }
 
     private int BANNED_WORDS_STEP = 10;
+
     private boolean isRudeText(String input) {
         int from = 0;
         int to = BANNED_WORDS_STEP;

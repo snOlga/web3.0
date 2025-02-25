@@ -28,7 +28,7 @@ public class PurchaseEntity {
     @Nonnull
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private UserEntity product;
+    private ProductEntity product;
 
     @Nonnull
     @Column(name = "is_deleted")

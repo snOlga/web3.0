@@ -25,7 +25,7 @@ public class ProductConverter {
     public ProductDTO fromEntity(ProductEntity entity) {
         return new ProductDTO(
                 entity.getId(),
-                userConverter.fromEntity(entity.getOwner()),
+                userConverter.fromEntity(entity.getSeller()),
                 entity.getContent());
     }
 }
