@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "comments")
-@Where(clause = "is_deleted = false")
+@Where(clause = "is_deleted = false AND is_checked = true")
 public class CommentEntity {
 
     @Id
@@ -44,4 +44,9 @@ public class CommentEntity {
     @Column(name = "is_deleted")
     @ColumnDefault("false")
     private Boolean isDeleted;
+
+    @Nonnull
+    @Column(name = "is_checked")
+    @ColumnDefault("false")
+    private Boolean isChecked;
 }

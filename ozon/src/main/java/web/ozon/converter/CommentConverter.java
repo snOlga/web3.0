@@ -19,12 +19,13 @@ public class CommentConverter {
             return null;
 
         return new CommentEntity(
-                null,
+                dto.getId(),
                 productConverter.fromDTO(dto.getProduct()),
                 userConverter.fromDTO(dto.getAuthor()),
                 dto.getContent(),
                 dto.getIsAnonymous(),
-                null);
+                dto.getIsDeleted(),
+                false);
     }
 
     public CommentDTO fromEntity(CommentEntity entity) {

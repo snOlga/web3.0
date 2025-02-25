@@ -7,12 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
 
 import web.ozon.DTO.CommentDTO;
 import web.ozon.converter.CommentConverter;
 import web.ozon.converter.UserConverter;
 import web.ozon.entity.BannedWordEntity;
+import web.ozon.entity.CommentEntity;
 import web.ozon.entity.PurchaseEntity;
 import web.ozon.repository.BannedWordsRepository;
 import web.ozon.repository.CommentRepository;
@@ -31,19 +33,28 @@ public class CommentService {
     private UserConverter userConverter;
     @Autowired
     private BannedWordsRepository bannedWordsRepository;
+    @Autowired
+    private CommentRequestService commentRequestService;
 
     public List<CommentDTO> getAllByProductId(Long productId, int from, int to) {
         return commentRepository.findAllByProductId(productId, PageRequest.of(from, to)).stream()
                 .map(commentConverter::fromEntity).toList();
     }
 
+    @Transactional
     public CommentDTO save(CommentDTO commentDTO) {
+        if(commentDTO.getId() != null)
+            return null;
         if (!validateComment(commentDTO))
             return null;
         if (isRudeText(commentDTO.getContent()))
             return null;
-
-        return commentDTO;
+        
+        CommentEntity commentEntity = commentConverter.fromDTO(commentDTO);
+        commentRepository.save(commentEntity);
+        CommentDTO result =  commentConverter.fromEntity(commentEntity);
+        commentRequestService.createRequest(result);
+        return result;
     }
 
     private boolean validateComment(CommentDTO commentDTO) {

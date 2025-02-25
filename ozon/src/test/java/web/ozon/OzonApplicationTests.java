@@ -65,14 +65,19 @@ class OzonApplicationTests {
 	}
 
 	@ParameterizedTest
-	@CsvSource({ "the best!,false,false,1,2",
-			"i hate it,true,false,1,3",
-			"nice,false,true,3,1" })
-	void loadTestComments(String content, Boolean isAnonymous, Boolean isDeleted, Long authorId, Long productId) {
+	@CsvSource({ "the best!,false,false,1,2,true",
+			"i hate it,true,false,1,3,true",
+			"nice,false,true,3,1,true" })
+	void loadTestComments(String content,
+			Boolean isAnonymous,
+			Boolean isDeleted,
+			Long authorId,
+			Long productId,
+			Boolean isChecked) {
 		UserEntity userEntity = userRepository.findById(authorId).get();
 		ProductEntity productEntity = productRepository.findById(productId).get();
 		CommentEntity commentEntity = new CommentEntity(null, productEntity, userEntity, content, isAnonymous,
-				isDeleted);
+				isDeleted, isChecked);
 		commentRepository.save(commentEntity);
 	}
 }
