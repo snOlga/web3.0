@@ -3,9 +3,9 @@ package web.ozon.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import web.ozon.entity.ProductEntity;
+import web.ozon.entity.BannedWordEntity;
 
 @Repository
-public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
+public interface BannedWordsRepository extends JpaRepository<BannedWordEntity, Long> {
     
 }
