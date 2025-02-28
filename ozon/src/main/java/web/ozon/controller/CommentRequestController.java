@@ -29,7 +29,7 @@ public class CommentRequestController {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @GetMapping("/{from}/{to}")
+    @GetMapping("/unchecked/{from}/{to}")
     public ResponseEntity<List<CommentRequestDTO>> getUncheckedCommentRequests(@PathVariable Integer from,
             @PathVariable Integer to) {
         return new ResponseEntity<>(commentRequestService.getAllNotChecked(from, to), HttpStatus.OK);
