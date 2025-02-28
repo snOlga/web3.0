@@ -43,43 +43,56 @@ public class CommentService {
 
     @Transactional
     public CommentDTO save(CommentDTO commentDTO) {
-        if(commentDTO.getId() != null)
+        if (commentDTO.getId() != null)
             return null;
-        if (!validateComment(commentDTO))
+        if (!isCommentOk(commentDTO))
             return null;
         if (isRudeText(commentDTO.getContent()))
             return null;
-        
+
         CommentEntity commentEntity = commentConverter.fromDTO(commentDTO);
         commentRepository.save(commentEntity);
-        CommentDTO result =  commentConverter.fromEntity(commentEntity);
+        CommentDTO result = commentConverter.fromEntity(commentEntity);
         commentRequestService.createRequest(result);
         return result;
     }
 
-    private boolean validateComment(CommentDTO commentDTO) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-
-        if (!commentDTO.getAuthor().getLogin().equals(currentPrincipalName))
+    private boolean isCommentOk(CommentDTO commentDTO) {
+        if (!isCommentFieldsOk(commentDTO))
             return false;
-
+        if (!isAuthorTheSame(commentDTO))
+            return false;
         commentDTO.setAuthor(userConverter.fromEntity(userConverter.fromDTO(commentDTO.getAuthor())));
-
-        if (commentDTO.getProduct().getId() == null)
+        if (!isCommentNew(commentDTO))
             return false;
-
-        PurchaseEntity purchaseEntity = purchaseRepository.findByOwnerIdAndProductId(commentDTO.getAuthor().getId(),
-                commentDTO.getProduct().getId());
-
-        if (purchaseEntity == null)
+        if (!isTheProductWasBought(commentDTO))
             return false;
-
         return true;
     }
 
-    private int BANNED_WORDS_STEP = 10;
+    private boolean isCommentFieldsOk(CommentDTO commentDTO) {
+        return (commentDTO != null) && (commentDTO.getAuthor().getId() != null);
+    }
 
+    private boolean isCommentNew(CommentDTO commentDTO) {
+        CommentEntity existedComment = commentRepository.findByProductIdAndAuthorId(commentDTO.getProduct().getId(),
+                commentDTO.getAuthor().getId());
+        return existedComment != null;
+    }
+
+    private boolean isAuthorTheSame(CommentDTO commentDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        return commentDTO.getAuthor().getLogin().equals(currentPrincipalName);
+    }
+
+    private boolean isTheProductWasBought(CommentDTO commentDTO) {
+        PurchaseEntity purchaseEntity = purchaseRepository.findByOwnerIdAndProductId(commentDTO.getAuthor().getId(),
+                commentDTO.getProduct().getId());
+        return purchaseEntity != null;
+    }
+
+    private int BANNED_WORDS_STEP = 10;
     private boolean isRudeText(String input) {
         int from = 0;
         int to = BANNED_WORDS_STEP;
