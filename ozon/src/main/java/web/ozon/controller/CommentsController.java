@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.annotation.security.PermitAll;
 import web.ozon.DTO.CommentDTO;
 import web.ozon.service.CommentService;
 
@@ -18,7 +19,7 @@ public class CommentsController {
     @Autowired
     private CommentService commentService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PermitAll
     @GetMapping("/{productId}/{from}/{to}")
     public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long productId,
             @PathVariable Integer from,

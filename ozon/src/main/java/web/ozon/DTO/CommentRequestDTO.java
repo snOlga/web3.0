@@ -15,6 +15,12 @@ public class CommentRequestDTO {
     @Nonnull
     private CommentDTO comment;
 
+    @Null
+    private Boolean isChecked;
+
+    @Null
+    private UserDTO checker;
+
     @Nonnull
     private Boolean isDeleted;
 }

@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,15 @@ public class CommentRequestEntity {
     @ManyToOne
     @JoinColumn(name = "comment_id")
     private CommentEntity comment;
+
+    @Null
+    @Column(name = "is_checked")
+    private Boolean isChecked;
+
+    @Null
+    @ManyToOne
+    @JoinColumn(name = "checker_id")
+    private UserEntity checker;
 
     @Nonnull
     @Column(name = "is_deleted")
