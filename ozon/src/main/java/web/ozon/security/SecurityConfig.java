@@ -25,6 +25,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs*/**").permitAll()
+                        .requestMatchers("/comments/**").hasAnyAuthority("USER", "ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(new SecurityJwtTokenValidator(repoUser), UsernamePasswordAuthenticationFilter.class)
                 .cors((cors) -> cors.disable())

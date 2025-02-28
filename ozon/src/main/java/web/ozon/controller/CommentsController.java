@@ -33,4 +33,22 @@ public class CommentsController {
         CommentDTO result = commentService.save(commentDTO);
         return new ResponseEntity<>(result, result != null ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST);
     }
+
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @PutMapping("/{id}")
+    public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
+        if (!id.equals(commentDTO.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        CommentDTO result = commentService.update(commentDTO);
+        return result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+        return commentService.delete(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
+    }
 }

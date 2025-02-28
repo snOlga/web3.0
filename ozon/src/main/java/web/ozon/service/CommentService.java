@@ -110,4 +110,47 @@ public class CommentService {
         }
         return false;
     }
+
+    @Transactional
+    public CommentDTO update(CommentDTO commentDTO) {
+        CommentEntity existing = commentRepository.findById(commentDTO.getId())
+                .orElse(null);
+        if (existing == null || existing.getIsDeleted() || !isAuthorTheSame(existing)) {
+            return null;
+        }
+
+        if (!isCommentOk(commentDTO)) return null;
+
+        // Обновление контента
+        if (!existing.getContent().equals(commentDTO.getContent())) {
+            existing.setContent(commentDTO.getContent());
+            existing.setIsChecked(false); // Требует повторной проверки
+            commentRepository.save(existing);
+            commentRequestService.createRequest(commentDTO);
+        }
+        return commentConverter.fromEntity(existing);
+    }
+
+    @Transactional
+    public boolean delete(Long id) {
+        CommentEntity comment = commentRepository.findById(id).orElse(null);
+        if (comment == null || comment.getIsDeleted()) return false;
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(g -> g.getAuthority().equals("ADMIN"));
+        boolean isOwner = comment.getAuthor().getLogin().equals(auth.getName());
+
+        if (!isOwner && !isAdmin) return false;
+
+        comment.setIsDeleted(true);
+        commentRepository.save(comment);
+        return true;
+    }
+
+    private boolean isAuthorTheSame(CommentEntity comment) {
+        String currentUser = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        return comment.getAuthor().getLogin().equals(currentUser);
+    }
 }
