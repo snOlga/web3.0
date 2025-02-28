@@ -38,18 +38,13 @@ public class CommentService {
 
     public List<CommentDTO> getAllByProductId(Long productId, int from, int to) {
         return commentRepository.findAllByProductId(productId, PageRequest.of(from, to)).stream()
-                .map(commentConverter::fromEntity).toList();
+                .filter(comment -> comment.getIsChecked()).map(commentConverter::fromEntity).toList();
     }
 
     @Transactional
     public CommentDTO save(CommentDTO commentDTO) {
-        if (commentDTO.getId() != null)
-            return null;
         if (!isCommentOk(commentDTO))
             return null;
-        if (isRudeText(commentDTO.getContent()))
-            return null;
-
         CommentEntity commentEntity = commentConverter.fromDTO(commentDTO);
         commentRepository.save(commentEntity);
         CommentDTO result = commentConverter.fromEntity(commentEntity);
@@ -58,20 +53,26 @@ public class CommentService {
     }
 
     private boolean isCommentOk(CommentDTO commentDTO) {
-        if (!isCommentFieldsOk(commentDTO))
-            return false;
-        if (!isAuthorTheSame(commentDTO))
+        if (!isOkDto(commentDTO))
             return false;
         commentDTO.setAuthor(userConverter.fromEntity(userConverter.fromDTO(commentDTO.getAuthor())));
-        if (!isCommentNew(commentDTO))
-            return false;
-        if (!isTheProductWasBought(commentDTO))
-            return false;
-        return true;
+        return isBusinessOk(commentDTO);
+    }
+
+    private boolean isOkDto(CommentDTO commentDTO) {
+        return isCommentFieldsOk(commentDTO) && isAuthorTheSame(commentDTO);
+    }
+
+    private boolean isBusinessOk(CommentDTO commentDTO) {
+        return isCommentNew(commentDTO)
+                && isTheProductWasBought(commentDTO)
+                && !isRudeText(commentDTO.getContent());
     }
 
     private boolean isCommentFieldsOk(CommentDTO commentDTO) {
-        return (commentDTO != null) && (commentDTO.getAuthor().getId() != null);
+        return (commentDTO != null)
+                && (commentDTO.getAuthor().getId() != null)
+                && commentDTO.getId() == null;
     }
 
     private boolean isCommentNew(CommentDTO commentDTO) {
@@ -93,6 +94,7 @@ public class CommentService {
     }
 
     private int BANNED_WORDS_STEP = 10;
+
     private boolean isRudeText(String input) {
         int from = 0;
         int to = BANNED_WORDS_STEP;
