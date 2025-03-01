@@ -78,7 +78,7 @@ public class CommentService {
     private boolean isCommentNew(CommentDTO commentDTO) {
         CommentEntity existedComment = commentRepository.findByProductIdAndAuthorId(commentDTO.getProduct().getId(),
                 commentDTO.getAuthor().getId());
-        return existedComment != null;
+        return existedComment == null;
     }
 
     private boolean isAuthorTheSame(CommentDTO commentDTO) {

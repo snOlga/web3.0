@@ -39,7 +39,11 @@ public class CommentRequestService {
         CommentEntity commentEntity = commentRepository.findById(commentDTO.getId()).get();
         CommentRequestEntity commentRequestEntity = new CommentRequestEntity(null, commentEntity, null, null, false);
         commentRequestRepository.save(commentRequestEntity);
-        messagingTemplate.convertAndSend("/topic/comment-request/" + commentRequestEntity.getId());
+        try {
+            messagingTemplate.convertAndSend("/topic/comment-request/" + commentRequestEntity.getId());
+        } catch (IllegalStateException e) {
+            // TODO: handle exception
+        }
     }
 
     public List<CommentRequestDTO> getAll(int from, int to) {
@@ -56,13 +60,13 @@ public class CommentRequestService {
     public CommentRequestDTO update(CommentRequestDTO dto) {
         CommentRequestEntity entity = commentRequestRepository.findById(dto.getId())
                 .orElse(null);
-        if (entity == null || entity.getIsDeleted()) return null;
+        if (entity == null || entity.getIsDeleted())
+            return null;
 
         if (dto.getIsChecked() != null) {
             entity.setIsChecked(dto.getIsChecked());
             UserEntity checker = userRepository.findByLogin(
-                    SecurityContextHolder.getContext().getAuthentication().getName()
-            );
+                    SecurityContextHolder.getContext().getAuthentication().getName());
             entity.setChecker(checker);
 
             if (dto.getIsChecked()) {
@@ -78,7 +82,8 @@ public class CommentRequestService {
     public boolean delete(Long id) {
         CommentRequestEntity entity = commentRequestRepository.findById(id)
                 .orElse(null);
-        if (entity == null || entity.getIsDeleted()) return false;
+        if (entity == null || entity.getIsDeleted())
+            return false;
         entity.setIsDeleted(true);
         commentRequestRepository.save(entity);
         return true;
