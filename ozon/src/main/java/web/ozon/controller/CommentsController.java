@@ -18,7 +18,6 @@ import web.ozon.exception.NullContentException;
 import web.ozon.exception.NullProductIdException;
 import web.ozon.filter.CommentFilter;
 import web.ozon.service.CommentService;
-import web.ozon.utils.ResponseWithMessage;
 
 @RestController
 @RequestMapping("/comments")
@@ -37,19 +36,14 @@ public class CommentsController {
         return new ResponseEntity<>(commentService.getAllByProductId(productId, from, to), HttpStatus.OK);
     }
 
-    @SuppressWarnings("rawtypes")
     @PreAuthorize("hasAnyAuthority('USER')")
     @PostMapping
-    public ResponseEntity<ResponseWithMessage> postComment(@RequestBody CommentDTO commentDTO) {
-        try {
-            commentFilter.isOkNewDto(commentDTO);
-            CommentDTO result = commentService.save(commentDTO);
-            return (new ResponseEntity<>(new ResponseWithMessage<CommentDTO>("", result), HttpStatus.CREATED));
-        } catch (NullPointerException | NullAuthorIdException | NullProductIdException | NonNullNewIdException
-                | NullContentException | NullAnonException | NotSameAuthorException e) {
-            return (new ResponseEntity<>(new ResponseWithMessage<String>("Something was wrong", null),
-                    HttpStatus.BAD_REQUEST));
-        }
+    public ResponseEntity<CommentDTO> postComment(@RequestBody CommentDTO commentDTO)
+            throws NullPointerException, NullAuthorIdException, NullProductIdException, NonNullNewIdException,
+            NullContentException, NullAnonException, NotSameAuthorException {
+        commentFilter.isOkNewDto(commentDTO);
+        CommentDTO result = commentService.save(commentDTO);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAnyAuthority('USER')")
