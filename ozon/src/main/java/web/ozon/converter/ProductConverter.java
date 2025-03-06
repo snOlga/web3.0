@@ -28,4 +28,8 @@ public class ProductConverter {
                 userConverter.fromEntity(entity.getSeller()),
                 entity.getContent());
     }
+
+    public ProductEntity fromId(Long id) {
+        return productRepository.findById(id).orElse(null);
+    }
 }

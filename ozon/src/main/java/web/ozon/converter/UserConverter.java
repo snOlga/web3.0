@@ -26,4 +26,8 @@ public class UserConverter {
 
         return new UserDTO(entity.getId(), entity.getLogin());
     }
+
+    public UserEntity fromId(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
 }

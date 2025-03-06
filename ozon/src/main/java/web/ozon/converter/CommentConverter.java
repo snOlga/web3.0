@@ -15,16 +15,16 @@ public class CommentConverter {
     private ProductConverter productConverter;
 
     public CommentEntity fromDTO(CommentDTO dto) {
-        if (dto == null || dto.getAuthor() == null || dto.getProduct() == null)
+        if (dto == null)
             return null;
 
         return new CommentEntity(
                 dto.getId(),
-                productConverter.fromDTO(dto.getProduct()),
-                userConverter.fromDTO(dto.getAuthor()),
+                productConverter.fromId(dto.getProductId()),
+                userConverter.fromId(dto.getAuthorId()),
                 dto.getContent(),
                 dto.getIsAnonymous(),
-                dto.getIsDeleted(),
+                dto.getIsDeleted() == null ? false : dto.getIsDeleted(),
                 false);
     }
 
@@ -34,8 +34,8 @@ public class CommentConverter {
 
         return new CommentDTO(
                 entity.getId(),
-                productConverter.fromEntity(entity.getProduct()),
-                userConverter.fromEntity(entity.getAuthor()),
+                entity.getProduct().getId(),
+                entity.getAuthor().getId(),
                 entity.getContent(),
                 entity.getIsAnonymous(),
                 entity.getIsDeleted());

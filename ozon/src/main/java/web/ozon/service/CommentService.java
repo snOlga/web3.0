@@ -1,9 +1,9 @@
 package web.ozon.service;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,6 @@ import org.springframework.security.core.Authentication;
 
 import web.ozon.DTO.CommentDTO;
 import web.ozon.converter.CommentConverter;
-import web.ozon.converter.UserConverter;
 import web.ozon.entity.BannedWordEntity;
 import web.ozon.entity.CommentEntity;
 import web.ozon.entity.PurchaseEntity;
@@ -30,8 +29,6 @@ public class CommentService {
     @Autowired
     private PurchaseRepository purchaseRepository;
     @Autowired
-    private UserConverter userConverter;
-    @Autowired
     private BannedWordsRepository bannedWordsRepository;
     @Autowired
     private CommentRequestService commentRequestService;
@@ -43,7 +40,7 @@ public class CommentService {
 
     @Transactional
     public CommentDTO save(CommentDTO commentDTO) {
-        if (!isCommentOk(commentDTO))
+        if (!isBusinessOk(commentDTO))
             return null;
         CommentEntity commentEntity = commentConverter.fromDTO(commentDTO);
         commentRepository.save(commentEntity);
@@ -52,63 +49,33 @@ public class CommentService {
         return result;
     }
 
-    private boolean isCommentOk(CommentDTO commentDTO) {
-        if (!isOkDto(commentDTO))
-            return false;
-        commentDTO.setAuthor(userConverter.fromEntity(userConverter.fromDTO(commentDTO.getAuthor())));
-        return isBusinessOk(commentDTO);
-    }
-
-    private boolean isOkDto(CommentDTO commentDTO) {
-        return isCommentFieldsOk(commentDTO) && isAuthorTheSame(commentDTO);
-    }
-
     private boolean isBusinessOk(CommentDTO commentDTO) {
         return isCommentNew(commentDTO)
                 && isTheProductWasBought(commentDTO)
                 && !isRudeText(commentDTO.getContent());
     }
 
-    private boolean isCommentFieldsOk(CommentDTO commentDTO) {
-        return (commentDTO != null)
-                && (commentDTO.getAuthor().getId() != null)
-                && commentDTO.getId() == null;
-    }
-
     private boolean isCommentNew(CommentDTO commentDTO) {
-        CommentEntity existedComment = commentRepository.findByProductIdAndAuthorId(commentDTO.getProduct().getId(),
-                commentDTO.getAuthor().getId());
+        CommentEntity existedComment = commentRepository.findByProductIdAndAuthorId(commentDTO.getProductId(),
+                commentDTO.getAuthorId());
         return existedComment == null;
     }
 
-    private boolean isAuthorTheSame(CommentDTO commentDTO) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        return commentDTO.getAuthor().getLogin().equals(currentPrincipalName);
-    }
-
     private boolean isTheProductWasBought(CommentDTO commentDTO) {
-        PurchaseEntity purchaseEntity = purchaseRepository.findByOwnerIdAndProductId(commentDTO.getAuthor().getId(),
-                commentDTO.getProduct().getId());
+        PurchaseEntity purchaseEntity = purchaseRepository.findByOwnerIdAndProductId(commentDTO.getAuthorId(),
+                commentDTO.getProductId());
         return purchaseEntity != null;
     }
 
     private int BANNED_WORDS_STEP = 10;
 
     private boolean isRudeText(String input) {
-        int from = 0;
-        int to = BANNED_WORDS_STEP;
-        Page<BannedWordEntity> bannedWords = bannedWordsRepository.findAll(PageRequest.of(from, to));
-        while (!bannedWords.isEmpty()) {
-            for (BannedWordEntity bannedWordEntity : bannedWords) {
-                if (input.contains(bannedWordEntity.getWord()))
-                    return true;
-            }
-            from += BANNED_WORDS_STEP;
-            to += BANNED_WORDS_STEP;
-            bannedWords = bannedWordsRepository.findAll(PageRequest.of(from, to));
-        }
-        return false;
+        return Stream.iterate(0, from -> from + BANNED_WORDS_STEP)
+                .map(from -> bannedWordsRepository.findAll(PageRequest.of(from, BANNED_WORDS_STEP)))
+                .takeWhile(bannedWords -> !bannedWords.isEmpty())
+                .flatMap(bannedWords -> bannedWords.getContent().stream())
+                .map(BannedWordEntity::getWord)
+                .anyMatch(input::contains);
     }
 
     @Transactional
@@ -119,7 +86,8 @@ public class CommentService {
             return null;
         }
 
-        if (!isCommentOk(commentDTO)) return null;
+        if (!isBusinessOk(commentDTO)) // TODO: wrong logic
+            return null;
 
         // Обновление контента
         if (!existing.getContent().equals(commentDTO.getContent())) {
@@ -134,14 +102,16 @@ public class CommentService {
     @Transactional
     public boolean delete(Long id) {
         CommentEntity comment = commentRepository.findById(id).orElse(null);
-        if (comment == null || comment.getIsDeleted()) return false;
+        if (comment == null || comment.getIsDeleted())
+            return false;
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(g -> g.getAuthority().equals("ADMIN"));
         boolean isOwner = comment.getAuthor().getLogin().equals(auth.getName());
 
-        if (!isOwner && !isAdmin) return false;
+        if (!isOwner && !isAdmin)
+            return false;
 
         comment.setIsDeleted(true);
         commentRepository.save(comment);
