@@ -15,6 +15,9 @@ import web.ozon.converter.CommentConverter;
 import web.ozon.entity.BannedWordEntity;
 import web.ozon.entity.CommentEntity;
 import web.ozon.entity.PurchaseEntity;
+import web.ozon.exception.CommentNotNewException;
+import web.ozon.exception.ProductNotBoughtException;
+import web.ozon.exception.RudeTextException;
 import web.ozon.repository.BannedWordsRepository;
 import web.ozon.repository.CommentRepository;
 import web.ozon.repository.PurchaseRepository;
@@ -33,15 +36,16 @@ public class CommentService {
     @Autowired
     private CommentRequestService commentRequestService;
 
-    public List<CommentDTO> getAllByProductId(Long productId, int from, int to) {
-        return commentRepository.findAllByProductId(productId, PageRequest.of(from, to)).stream()
+    private int PAGINATION_STEP = 10;
+
+    public List<CommentDTO> getAllByProductId(Long productId, int from) {
+        return commentRepository.findAllByProductId(productId, PageRequest.of(from, PAGINATION_STEP)).stream()
                 .filter(comment -> comment.getIsChecked()).map(commentConverter::fromEntity).toList();
     }
 
     @Transactional
-    public CommentDTO save(CommentDTO commentDTO) {
-        if (!isBusinessOk(commentDTO))
-            return null;
+    public CommentDTO save(CommentDTO commentDTO) throws CommentNotNewException, ProductNotBoughtException, RudeTextException {
+        isBusinessOk(commentDTO);
         CommentEntity commentEntity = commentConverter.fromDTO(commentDTO);
         commentRepository.save(commentEntity);
         CommentDTO result = commentConverter.fromEntity(commentEntity);
@@ -49,45 +53,46 @@ public class CommentService {
         return result;
     }
 
-    private boolean isBusinessOk(CommentDTO commentDTO) {
-        return isCommentNew(commentDTO)
-                && isTheProductWasBought(commentDTO)
-                && !isRudeText(commentDTO.getContent());
+    private void isBusinessOk(CommentDTO commentDTO) throws CommentNotNewException, ProductNotBoughtException, RudeTextException {
+        isCommentNew(commentDTO);
+        isTheProductWasBought(commentDTO);
+        isRudeText(commentDTO.getContent());
     }
 
-    private boolean isCommentNew(CommentDTO commentDTO) {
+    private void isCommentNew(CommentDTO commentDTO) throws CommentNotNewException {
         CommentEntity existedComment = commentRepository.findByProductIdAndAuthorId(commentDTO.getProductId(),
                 commentDTO.getAuthorId());
-        return existedComment == null;
+        if (existedComment != null)
+            throw new CommentNotNewException();
     }
 
-    private boolean isTheProductWasBought(CommentDTO commentDTO) {
+    private void isTheProductWasBought(CommentDTO commentDTO) throws ProductNotBoughtException {
         PurchaseEntity purchaseEntity = purchaseRepository.findByOwnerIdAndProductId(commentDTO.getAuthorId(),
                 commentDTO.getProductId());
-        return purchaseEntity != null;
+        if (purchaseEntity == null)
+            throw new ProductNotBoughtException();
     }
 
-    private int BANNED_WORDS_STEP = 10;
-
-    private boolean isRudeText(String input) {
-        return Stream.iterate(0, from -> from + BANNED_WORDS_STEP)
-                .map(from -> bannedWordsRepository.findAll(PageRequest.of(from, BANNED_WORDS_STEP)))
+    private void isRudeText(String input) throws RudeTextException {
+        boolean isRude = Stream.iterate(0, from -> from + PAGINATION_STEP)
+                .map(from -> bannedWordsRepository.findAll(PageRequest.of(from, PAGINATION_STEP)))
                 .takeWhile(bannedWords -> !bannedWords.isEmpty())
                 .flatMap(bannedWords -> bannedWords.getContent().stream())
                 .map(BannedWordEntity::getWord)
                 .anyMatch(input::contains);
+        if (isRude)
+            throw new RudeTextException();
     }
 
     @Transactional
-    public CommentDTO update(CommentDTO commentDTO) {
+    public CommentDTO update(CommentDTO commentDTO) throws CommentNotNewException, ProductNotBoughtException, RudeTextException {
         CommentEntity existing = commentRepository.findById(commentDTO.getId())
                 .orElse(null);
         if (existing == null || existing.getIsDeleted() || !isAuthorTheSame(existing)) {
             return null;
         }
 
-        if (!isBusinessOk(commentDTO)) // TODO: wrong logic
-            return null;
+        isBusinessOk(commentDTO); // TODO: wrong logic
 
         // Обновление контента
         if (!existing.getContent().equals(commentDTO.getContent())) {

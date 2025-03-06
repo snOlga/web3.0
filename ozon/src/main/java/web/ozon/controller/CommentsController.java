@@ -10,12 +10,15 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.security.PermitAll;
 import web.ozon.DTO.CommentDTO;
+import web.ozon.exception.CommentNotNewException;
 import web.ozon.exception.NonNullNewIdException;
 import web.ozon.exception.NotSameAuthorException;
 import web.ozon.exception.NullAnonException;
 import web.ozon.exception.NullAuthorIdException;
 import web.ozon.exception.NullContentException;
 import web.ozon.exception.NullProductIdException;
+import web.ozon.exception.ProductNotBoughtException;
+import web.ozon.exception.RudeTextException;
 import web.ozon.filter.CommentFilter;
 import web.ozon.service.CommentService;
 
@@ -29,18 +32,16 @@ public class CommentsController {
     private CommentFilter commentFilter;
 
     @PermitAll
-    @GetMapping("/{productId}/{from}/{to}")
-    public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long productId,
-            @PathVariable Integer from,
-            @PathVariable Integer to) {
-        return new ResponseEntity<>(commentService.getAllByProductId(productId, from, to), HttpStatus.OK);
+    @GetMapping("/{productId}/{from}")
+    public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long productId, @PathVariable Integer from) {
+        return new ResponseEntity<>(commentService.getAllByProductId(productId, from), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @PostMapping
     public ResponseEntity<CommentDTO> postComment(@RequestBody CommentDTO commentDTO)
             throws NullPointerException, NullAuthorIdException, NullProductIdException, NonNullNewIdException,
-            NullContentException, NullAnonException, NotSameAuthorException {
+            NullContentException, NullAnonException, NotSameAuthorException, CommentNotNewException, ProductNotBoughtException, RudeTextException {
         commentFilter.isOkNewDto(commentDTO);
         CommentDTO result = commentService.save(commentDTO);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
@@ -48,7 +49,7 @@ public class CommentsController {
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @PutMapping("/{id}")
-    public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
+    public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) throws CommentNotNewException, ProductNotBoughtException, RudeTextException {
         if (!id.equals(commentDTO.getId())) {
             return ResponseEntity.badRequest().build();
         }

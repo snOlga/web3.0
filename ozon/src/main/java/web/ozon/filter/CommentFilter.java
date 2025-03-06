@@ -53,7 +53,7 @@ public class CommentFilter {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
         UserEntity user = userConverter.fromId(commentDTO.getAuthorId());
-        if (!user.getLogin().equals(currentPrincipalName))
+        if (user == null || !user.getLogin().equals(currentPrincipalName))
             throw new NotSameAuthorException();
         return true;
     }
