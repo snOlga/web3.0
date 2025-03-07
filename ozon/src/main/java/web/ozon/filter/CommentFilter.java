@@ -1,39 +1,57 @@
 package web.ozon.filter;
 
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import web.ozon.DTO.CommentDTO;
 import web.ozon.converter.UserConverter;
+import web.ozon.entity.BannedWordEntity;
+import web.ozon.entity.PurchaseEntity;
 import web.ozon.entity.UserEntity;
 import web.ozon.exception.*;
+import web.ozon.repository.BannedWordsRepository;
+import web.ozon.repository.PurchaseRepository;
 
 @Service
 public class CommentFilter {
 
     @Autowired
     private UserConverter userConverter;
+    @Autowired
+    private PurchaseRepository purchaseRepository;
+    @Autowired
+    private BannedWordsRepository bannedWordsRepository;
+    
+    private int PAGINATION_STEP = 10;
 
-    public boolean isOkNewDto(CommentDTO commentDTO)
+    public void isOkNewDto(CommentDTO commentDTO)
             throws NullPointerException,
             NullAuthorIdException,
             NullProductIdException,
-            NonNullNewIdException,
             NullContentException,
             NullAnonException,
-            NotSameAuthorException {
-        return isFieldsOk(commentDTO) && isAuthorTheSame(commentDTO);
+            NotSameAuthorException,
+            CommentNotNewException,
+            ProductNotBoughtException,
+            RudeTextException, 
+            NonNullNewIdException {
+        isFieldsOk(commentDTO);
+        isAuthorTheSame(commentDTO);
+        isBusinessOk(commentDTO);
     }
 
-    private Boolean isFieldsOk(CommentDTO commentDTO)
+    private void isFieldsOk(CommentDTO commentDTO)
             throws NullPointerException,
             NullAuthorIdException,
             NullProductIdException,
-            NonNullNewIdException,
             NullContentException,
-            NullAnonException {
+            NullAnonException, 
+            NonNullNewIdException {
         if (commentDTO == null)
             throw new NullPointerException();
         if (commentDTO.getAuthorId() == null)
@@ -46,15 +64,37 @@ public class CommentFilter {
             throw new NullContentException();
         if (commentDTO.getIsAnonymous() == null)
             throw new NullAnonException();
-        return true;
     }
 
-    private boolean isAuthorTheSame(CommentDTO commentDTO) throws NotSameAuthorException {
+    private void isAuthorTheSame(CommentDTO commentDTO) throws NotSameAuthorException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
         UserEntity user = userConverter.fromId(commentDTO.getAuthorId());
         if (user == null || !user.getLogin().equals(currentPrincipalName))
             throw new NotSameAuthorException();
-        return true;
+    }
+
+    private void isBusinessOk(CommentDTO commentDTO)
+            throws CommentNotNewException, ProductNotBoughtException, RudeTextException {
+        isTheProductWasBought(commentDTO);
+        isRudeText(commentDTO.getContent());
+    }
+
+    private void isTheProductWasBought(CommentDTO commentDTO) throws ProductNotBoughtException {
+        PurchaseEntity purchaseEntity = purchaseRepository.findByOwnerIdAndProductId(commentDTO.getAuthorId(),
+                commentDTO.getProductId());
+        if (purchaseEntity == null)
+            throw new ProductNotBoughtException();
+    }
+
+    private void isRudeText(String input) throws RudeTextException {
+        boolean isRude = Stream.iterate(0, from -> from + PAGINATION_STEP)
+                .map(from -> bannedWordsRepository.findAll(PageRequest.of(from, PAGINATION_STEP)))
+                .takeWhile(bannedWords -> !bannedWords.isEmpty())
+                .flatMap(bannedWords -> bannedWords.getContent().stream())
+                .map(BannedWordEntity::getWord)
+                .anyMatch(input::contains);
+        if (isRude)
+            throw new RudeTextException();
     }
 }

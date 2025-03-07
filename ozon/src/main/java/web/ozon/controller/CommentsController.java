@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.security.PermitAll;
 import web.ozon.DTO.CommentDTO;
+import web.ozon.exception.CommentNotExistException;
 import web.ozon.exception.CommentNotNewException;
 import web.ozon.exception.NonNullNewIdException;
 import web.ozon.exception.NotSameAuthorException;
@@ -48,18 +49,16 @@ public class CommentsController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER')")
-    @PutMapping("/{id}")
-    public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) throws CommentNotNewException, ProductNotBoughtException, RudeTextException {
-        if (!id.equals(commentDTO.getId())) {
-            return ResponseEntity.badRequest().build();
-        }
+    @PatchMapping("/{id}")
+    public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) throws CommentNotExistException, NotSameAuthorException  {
+        commentDTO.setId(id);
         CommentDTO result = commentService.update(commentDTO);
         return result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) throws CommentNotExistException, NotSameAuthorException {
         return commentService.delete(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();

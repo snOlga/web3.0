@@ -8,7 +8,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.http.ResponseEntity;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class CommentExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -56,6 +56,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<String> handleCommentNotNewException(CommentNotNewException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("There is an existing comment");
+    }
+
+    @ExceptionHandler(CommentNotExistException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<String> handleCommentNotExistException(CommentNotExistException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No such comment");
     }
 
     @ExceptionHandler(ProductNotBoughtException.class)
