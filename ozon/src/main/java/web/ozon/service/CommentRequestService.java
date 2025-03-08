@@ -34,6 +34,8 @@ public class CommentRequestService {
     @Autowired
     private UserRepository userRepository;
 
+    private int PAGINATION_STEP = 10;
+
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void createRequest(CommentDTO commentDTO) {
         CommentEntity commentEntity = commentRepository.findById(commentDTO.getId()).get();
@@ -46,14 +48,13 @@ public class CommentRequestService {
         }
     }
 
-    public List<CommentRequestDTO> getAll(int from, int to) {
-        return commentRequestRepository.findAll(PageRequest.of(from, to)).getContent().stream()
+    public List<CommentRequestDTO> getAll(int from) {
+        return commentRequestRepository.findAll(PageRequest.of(from, PAGINATION_STEP)).getContent().stream()
                 .map(commentRequestConverter::fromEntity).toList();
     }
 
-    public List<CommentRequestDTO> getAllNotChecked(int from, int to) {
-        return commentRequestRepository.findByIsChecked(null).stream()
-                .map(commentRequestConverter::fromEntity).toList();
+    public List<CommentRequestDTO> getAllNotChecked(int from) {
+        return getAll(from).stream().filter(req -> !req.getIsChecked()).toList();
     }
 
     @Transactional

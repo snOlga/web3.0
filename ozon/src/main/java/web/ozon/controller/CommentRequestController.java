@@ -19,17 +19,15 @@ public class CommentRequestController {
     private CommentRequestService commentRequestService;
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @GetMapping("/{from}/{to}")
-    public ResponseEntity<List<CommentRequestDTO>> getCommentRequests(@PathVariable Integer from,
-            @PathVariable Integer to) {
-        return new ResponseEntity<>(commentRequestService.getAll(from, to), HttpStatus.OK);
+    @GetMapping("/{from}")
+    public ResponseEntity<List<CommentRequestDTO>> getCommentRequests(@PathVariable Integer from) {
+        return new ResponseEntity<>(commentRequestService.getAll(from), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @GetMapping("/unchecked/{from}/{to}")
-    public ResponseEntity<List<CommentRequestDTO>> getUncheckedCommentRequests(@PathVariable Integer from,
-            @PathVariable Integer to) {
-        return new ResponseEntity<>(commentRequestService.getAllNotChecked(from, to), HttpStatus.OK);
+    @GetMapping("/unchecked/{from}")
+    public ResponseEntity<List<CommentRequestDTO>> getUncheckedCommentRequests(@PathVariable Integer from) {
+        return new ResponseEntity<>(commentRequestService.getAllNotChecked(from), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
