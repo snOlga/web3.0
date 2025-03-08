@@ -14,15 +14,15 @@ import javax.crypto.SecretKey;
 
 @Component
 public class SecurityJwtTokenProvider {
-    
+
     @Value("${security.jwt.secret}")
     private String secretKey;
-    
     private SecretKey key;
 
     @PostConstruct
     public void init() {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + secretKey);
     }
 
     public String generateToken(Authentication authentication) {

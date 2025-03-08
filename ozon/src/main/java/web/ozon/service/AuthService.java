@@ -14,8 +14,9 @@ import web.ozon.security.SecurityUser;
 
 @Service
 public class AuthService {
-    private SecurityJwtTokenProvider jwtProvider = new SecurityJwtTokenProvider();
-
+    
+    @Autowired
+    private SecurityJwtTokenProvider jwtProvider;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired

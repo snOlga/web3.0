@@ -10,6 +10,7 @@ import web.ozon.repository.UserRepository;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +20,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class SecurityJwtTokenValidator extends OncePerRequestFilter {
-    private SecurityJwtTokenProvider jwtProvider = new SecurityJwtTokenProvider();
+    @Autowired
+    private SecurityJwtTokenProvider jwtProvider;
     private UserRepository repoUser;
 
     public SecurityJwtTokenValidator(UserRepository repoUser) {
