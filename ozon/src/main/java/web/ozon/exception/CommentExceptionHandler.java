@@ -76,6 +76,12 @@ public class CommentExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Comment content is rude");
     }
 
+    @ExceptionHandler(ContentTooLongException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<String> handleRudeTextException(ContentTooLongException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Comment content is too long");
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleGenericException(Exception ex, WebRequest request) {

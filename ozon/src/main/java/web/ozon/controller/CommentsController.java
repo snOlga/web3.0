@@ -12,6 +12,7 @@ import jakarta.annotation.security.PermitAll;
 import web.ozon.DTO.CommentDTO;
 import web.ozon.exception.CommentNotExistException;
 import web.ozon.exception.CommentNotNewException;
+import web.ozon.exception.ContentTooLongException;
 import web.ozon.exception.NonNullNewIdException;
 import web.ozon.exception.NotSameAuthorException;
 import web.ozon.exception.NullAnonException;
@@ -42,7 +43,7 @@ public class CommentsController {
     @PostMapping
     public ResponseEntity<CommentDTO> postComment(@RequestBody CommentDTO commentDTO)
             throws NullPointerException, NullAuthorIdException, NullProductIdException, NonNullNewIdException,
-            NullContentException, NullAnonException, NotSameAuthorException, CommentNotNewException, ProductNotBoughtException, RudeTextException {
+            NullContentException, NullAnonException, NotSameAuthorException, CommentNotNewException, ProductNotBoughtException, RudeTextException, ContentTooLongException {
         commentFilter.isOkNewDto(commentDTO);
         CommentDTO result = commentService.save(commentDTO);
         return new ResponseEntity<>(result, HttpStatus.CREATED);

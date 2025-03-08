@@ -26,8 +26,9 @@ public class CommentFilter {
     private PurchaseRepository purchaseRepository;
     @Autowired
     private BannedWordsRepository bannedWordsRepository;
-    
+
     private int PAGINATION_STEP = 10;
+    private int MAX_CONTENT_LENGTH = 255;
 
     public void isOkNewDto(CommentDTO commentDTO)
             throws NullPointerException,
@@ -38,8 +39,8 @@ public class CommentFilter {
             NotSameAuthorException,
             CommentNotNewException,
             ProductNotBoughtException,
-            RudeTextException, 
-            NonNullNewIdException {
+            RudeTextException,
+            NonNullNewIdException, ContentTooLongException {
         isFieldsOk(commentDTO);
         isAuthorTheSame(commentDTO);
         isBusinessOk(commentDTO);
@@ -50,8 +51,9 @@ public class CommentFilter {
             NullAuthorIdException,
             NullProductIdException,
             NullContentException,
-            NullAnonException, 
-            NonNullNewIdException {
+            NullAnonException,
+            NonNullNewIdException, 
+            ContentTooLongException {
         if (commentDTO == null)
             throw new NullPointerException();
         if (commentDTO.getAuthorId() == null)
@@ -64,6 +66,8 @@ public class CommentFilter {
             throw new NullContentException();
         if (commentDTO.getIsAnonymous() == null)
             throw new NullAnonException();
+        if (commentDTO.getContent().length() > MAX_CONTENT_LENGTH)
+            throw new ContentTooLongException();
     }
 
     private void isAuthorTheSame(CommentDTO commentDTO) throws NotSameAuthorException {
