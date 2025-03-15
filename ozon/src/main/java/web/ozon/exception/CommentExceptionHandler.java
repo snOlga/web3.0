@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+
+import web.ozon.DTO.ExceptionDTO;
+
 import org.springframework.http.ResponseEntity;
 
 @RestControllerAdvice
@@ -12,79 +15,79 @@ public class CommentExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleNullPointerException(NullPointerException ex) {
-        return ResponseEntity.badRequest().body("Null value encountered");
+    public ResponseEntity<ExceptionDTO> handleNullPointerException(NullPointerException ex) {
+        return ResponseEntity.badRequest().body(new ExceptionDTO("Null value encountered"));
     }
 
     @ExceptionHandler(NullAuthorIdException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleNullAuthorIdException(NullAuthorIdException ex) {
-        return ResponseEntity.badRequest().body("Author ID cannot be null");
+    public ResponseEntity<ExceptionDTO> handleNullAuthorIdException(NullAuthorIdException ex) {
+        return ResponseEntity.badRequest().body(new ExceptionDTO("Author ID cannot be null"));
     }
 
     @ExceptionHandler(NullProductIdException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleNullProductIdException(NullProductIdException ex) {
-        return ResponseEntity.badRequest().body("Product ID cannot be null");
+    public ResponseEntity<ExceptionDTO> handleNullProductIdException(NullProductIdException ex) {
+        return ResponseEntity.badRequest().body(new ExceptionDTO("Product ID cannot be null"));
     }
 
     @ExceptionHandler(NonNullNewIdException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleNonNullNewIdException(NonNullNewIdException ex) {
-        return ResponseEntity.badRequest().body("New ID must be null for a new comment");
+    public ResponseEntity<ExceptionDTO> handleNonNullNewIdException(NonNullNewIdException ex) {
+        return ResponseEntity.badRequest().body(new ExceptionDTO("New ID must be null for a new comment"));
     }
 
     @ExceptionHandler(NullContentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleNullContentException(NullContentException ex) {
-        return ResponseEntity.badRequest().body("Comment content cannot be null");
+    public ResponseEntity<ExceptionDTO> handleNullContentException(NullContentException ex) {
+        return ResponseEntity.badRequest().body(new ExceptionDTO("Comment content cannot be null"));
     }
 
     @ExceptionHandler(NullAnonException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleNullAnonException(NullAnonException ex) {
-        return ResponseEntity.badRequest().body("Anonymous flag cannot be null");
+    public ResponseEntity<ExceptionDTO> handleNullAnonException(NullAnonException ex) {
+        return ResponseEntity.badRequest().body(new ExceptionDTO("Anonymous flag cannot be null"));
     }
 
     @ExceptionHandler(NotSameAuthorException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<String> handleNotSameAuthorException(NotSameAuthorException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Author mismatch");
+    public ResponseEntity<ExceptionDTO> handleNotSameAuthorException(NotSameAuthorException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionDTO("Author mismatch"));
     }
 
     @ExceptionHandler(CommentNotNewException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<String> handleCommentNotNewException(CommentNotNewException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("There is an existing comment");
+    public ResponseEntity<ExceptionDTO> handleCommentNotNewException(CommentNotNewException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionDTO("There is an existing comment"));
     }
 
     @ExceptionHandler(CommentNotExistException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<String> handleCommentNotExistException(CommentNotExistException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No such comment");
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ExceptionDTO> handleCommentNotExistException(CommentNotExistException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionDTO("No such comment"));
     }
 
     @ExceptionHandler(ProductNotBoughtException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<String> handleProductNotBoughtException(ProductNotBoughtException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Product was not bought");
+    public ResponseEntity<ExceptionDTO> handleProductNotBoughtException(ProductNotBoughtException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionDTO("Product was not bought"));
     }
 
     @ExceptionHandler(RudeTextException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<String> handleRudeTextException(RudeTextException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Comment content is rude");
+    public ResponseEntity<ExceptionDTO> handleRudeTextException(RudeTextException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionDTO("Comment content is rude"));
     }
 
     @ExceptionHandler(ContentTooLongException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<String> handleRudeTextException(ContentTooLongException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Comment content is too long");
+    public ResponseEntity<ExceptionDTO> handleRudeTextException(ContentTooLongException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionDTO("Comment content is too long"));
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handleGenericException(Exception ex, WebRequest request) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
+    public ResponseEntity<ExceptionDTO> handleGenericException(Exception ex, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionDTO("Something wrong..."));
     }
 }

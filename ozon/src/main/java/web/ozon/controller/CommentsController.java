@@ -34,8 +34,8 @@ public class CommentsController {
     private CommentFilter commentFilter;
 
     @PermitAll
-    @GetMapping("/{productId}/{from}")
-    public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long productId, @PathVariable Integer from) {
+    @GetMapping("/{productId}")
+    public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long productId, @RequestParam(name="from") Integer from) {
         return new ResponseEntity<>(commentService.getAllByProductId(productId, from), HttpStatus.OK);
     }
 
