@@ -11,14 +11,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import web.ozon.repository.UserRepository;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Autowired
-    private UserRepository repoUser;
+    private SecurityJwtTokenValidator validator;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -27,7 +25,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs*/**").permitAll()
                         .requestMatchers("/comments/**").hasAnyAuthority("USER", "ADMIN")
                         .anyRequest().authenticated())
-                .addFilterBefore(new SecurityJwtTokenValidator(repoUser), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(validator, UsernamePasswordAuthenticationFilter.class)
                 .cors((cors) -> cors.disable())
                 .csrf((csrf) -> csrf.disable())
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

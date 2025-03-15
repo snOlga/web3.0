@@ -20,13 +20,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class SecurityJwtTokenValidator extends OncePerRequestFilter {
+    
     @Autowired
     private SecurityJwtTokenProvider jwtProvider;
+    @Autowired
     private UserRepository repoUser;
-
-    public SecurityJwtTokenValidator(UserRepository repoUser) {
-        this.repoUser = repoUser;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
