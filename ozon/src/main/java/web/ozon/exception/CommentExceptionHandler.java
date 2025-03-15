@@ -85,6 +85,6 @@ public class CommentExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleGenericException(Exception ex, WebRequest request) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("An error occurred");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("");
     }
 }
