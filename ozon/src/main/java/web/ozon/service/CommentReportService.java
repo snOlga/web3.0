@@ -1,0 +1,27 @@
+package web.ozon.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
+import web.ozon.DTO.CommentReportDTO;
+import web.ozon.converter.CommentReportConverter;
+import web.ozon.repository.CommentReportRepository;
+
+@Service
+public class CommentReportService {
+
+    @Autowired
+    private CommentReportRepository commentReportRepository;
+    @Autowired
+    private CommentReportConverter commentReportConverter;
+
+    private int PAGINATION_STEP = 10; // TODO: read from properties
+    
+    public List<CommentReportDTO> getAll(int from) {
+        return commentReportRepository.findAll(PageRequest.of(from, PAGINATION_STEP)).getContent().stream()
+                .map(commentReportConverter::fromEntity).toList();
+    }
+}

@@ -1,0 +1,24 @@
+package web.ozon.DTO;
+
+import lombok.*;
+import web.ozon.business.ReportReason;
+
+@Setter
+@Getter
+@AllArgsConstructor
+public class CommentReportDTO {
+
+    private Long id;
+
+    private CommentDTO comment;
+
+    private ReportReason reason;
+
+    private String message;
+
+    private Boolean isChecked;
+
+    private UserDTO checker;
+
+    private Boolean isDeleted;
+}
