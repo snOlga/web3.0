@@ -3,6 +3,7 @@ package web.ozon.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,8 @@ public class CommentRequestService {
     @Autowired
     private UserRepository userRepository;
 
-    private int PAGINATION_STEP = 10;
+    @Value("${business.pagination.step}")
+    private int PAGINATION_STEP;
 
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void createRequest(CommentDTO commentDTO) {
@@ -44,7 +46,6 @@ public class CommentRequestService {
         try {
             messagingTemplate.convertAndSend("/topic/comment-request/" + commentRequestEntity.getId());
         } catch (IllegalStateException e) {
-            // TODO: handle exception
         }
     }
 

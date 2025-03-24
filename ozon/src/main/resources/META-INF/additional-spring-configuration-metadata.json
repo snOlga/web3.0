@@ -1,5 +1,12 @@
-{"properties": [{
-  "name": "security.jwt.secret",
-  "type": "java.lang.String",
-  "description": "A description for 'security.jwt.secret'"
-}]}
+{"properties": [
+  {
+    "name": "security.jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'security.jwt.secret'"
+  },
+  {
+    "name": "business.pagination.step",
+    "type": "java.lang.String",
+    "description": "A description for 'business.pagination.step'"
+  }
+]}
