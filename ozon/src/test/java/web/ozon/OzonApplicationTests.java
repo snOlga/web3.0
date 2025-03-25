@@ -77,7 +77,7 @@ class OzonApplicationTests {
 		UserEntity userEntity = userRepository.findById(authorId).get();
 		ProductEntity productEntity = productRepository.findById(productId).get();
 		CommentEntity commentEntity = new CommentEntity(null, productEntity, userEntity, content, isAnonymous,
-				isDeleted, isChecked);
+				isDeleted, isChecked, false);
 		commentRepository.save(commentEntity);
 	}
 }

@@ -25,7 +25,8 @@ public class CommentConverter {
                 dto.getContent(),
                 dto.getIsAnonymous(),
                 dto.getIsDeleted() == null ? false : dto.getIsDeleted(),
-                false);
+                dto.getIsChecked(),
+                dto.getIsReported() == null ? false : dto.getIsReported());
     }
 
     public CommentDTO fromEntity(CommentEntity entity) {
@@ -38,6 +39,8 @@ public class CommentConverter {
                 entity.getAuthor().getId(),
                 entity.getContent(),
                 entity.getIsAnonymous(),
-                entity.getIsDeleted());
+                entity.getIsDeleted(),
+                entity.getIsChecked(),
+                entity.getIsReported());
     }
 }

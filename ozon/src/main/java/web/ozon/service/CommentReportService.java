@@ -20,10 +20,19 @@ public class CommentReportService {
     private CommentReportConverter commentReportConverter;
 
     @Value("${business.pagination.step}")
-    private int PAGINATION_STEP = 10;
+    private int PAGINATION_STEP;
 
     public List<CommentReportDTO> getAll(int from) {
         return commentReportRepository.findAll(PageRequest.of(from, PAGINATION_STEP)).getContent().stream()
+                .map(commentReportConverter::fromEntity).toList();
+    }
+
+    public List<CommentReportDTO> getAllNotChecked(int from) {
+        return getAll(from).stream().filter(report -> !report.getIsChecked()).toList();
+    }
+
+    public List<CommentReportDTO> getAllByCommentId(Long id, int from) {
+        return commentReportRepository.findAllByCommentId(id, PageRequest.of(from, PAGINATION_STEP)).stream()
                 .map(commentReportConverter::fromEntity).toList();
     }
 }

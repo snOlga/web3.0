@@ -18,4 +18,8 @@ public class CommentDTO {
     private Boolean isAnonymous;
     
     private Boolean isDeleted;
+
+    private Boolean isChecked;
+
+    private Boolean isReported;
 }
