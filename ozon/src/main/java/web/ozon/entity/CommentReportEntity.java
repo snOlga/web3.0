@@ -5,7 +5,6 @@ import org.hibernate.annotations.Where;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Null;
 import lombok.*;
 import web.ozon.business.ReportReason;
 
@@ -33,15 +32,12 @@ public class CommentReportEntity {
     @Column(name = "reason")
     private ReportReason reason;
 
-    @Null
     @Column(name = "message")
     private String message;
 
-    @Null
     @Column(name = "is_checked")
     private Boolean isChecked;
 
-    @Null
     @ManyToOne
     @JoinColumn(name = "checker_id")
     private UserEntity checker;

@@ -35,4 +35,8 @@ public class CommentReportService {
         return commentReportRepository.findAllByCommentId(id, PageRequest.of(from, PAGINATION_STEP)).stream()
                 .map(commentReportConverter::fromEntity).toList();
     }
+
+    public CommentReportDTO save(CommentReportDTO dto) {
+        return commentReportConverter.fromEntity(commentReportRepository.save(commentReportConverter.fromDTO(dto)));
+    }
 }

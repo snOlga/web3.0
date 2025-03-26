@@ -44,7 +44,7 @@ public class CommentsController {
     public ResponseEntity<CommentDTO> postComment(@RequestBody CommentDTO commentDTO)
             throws NullPointerException, NullAuthorIdException, NullProductIdException, NonNullNewIdException,
             NullContentException, NullAnonException, NotSameAuthorException, CommentNotNewException, ProductNotBoughtException, RudeTextException, ContentTooLongException {
-        commentFilter.isOkNewDto(commentDTO);
+        commentFilter.filter(commentDTO);
         CommentDTO result = commentService.save(commentDTO);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }

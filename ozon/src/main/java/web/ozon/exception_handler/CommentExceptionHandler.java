@@ -1,4 +1,4 @@
-package web.ozon.exception;
+package web.ozon.exception_handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import web.ozon.DTO.ExceptionDTO;
+import web.ozon.exception.*;
 
 import org.springframework.http.ResponseEntity;
 
@@ -89,5 +90,17 @@ public class CommentExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ExceptionDTO> handleGenericException(Exception ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionDTO("Something wrong..."));
+    }
+
+    @ExceptionHandler(NullReasonException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ExceptionDTO> handleNullReasonException(NullReasonException ex) {
+        return ResponseEntity.badRequest().body(new ExceptionDTO("Readon cannot be null"));
+    }
+
+    @ExceptionHandler(NullCommentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ExceptionDTO> handleNullCommentException(NullCommentException ex) {
+        return ResponseEntity.badRequest().body(new ExceptionDTO("Comment cannot be null"));
     }
 }

@@ -8,11 +8,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import web.ozon.DTO.CommentReportDTO;
+import web.ozon.exception.CommentNotExistException;
+import web.ozon.exception.NullCommentException;
+import web.ozon.exception.NullContentException;
+import web.ozon.exception.NullReasonException;
+import web.ozon.filter.CommentReportFilter;
 import web.ozon.service.CommentReportService;
 
 @RestController
@@ -21,6 +28,8 @@ public class CommentReportController {
 
     @Autowired
     private CommentReportService commentReportService;
+    @Autowired
+    private CommentReportFilter commentReportFilter;
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MODER')")
     @GetMapping
@@ -41,5 +50,13 @@ public class CommentReportController {
             @PathVariable Long id,
             @RequestParam(name = "from") Integer from) {
         return new ResponseEntity<>(commentReportService.getAllByCommentId(id, from), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @PostMapping
+    public ResponseEntity<CommentReportDTO> postCommentReport(@RequestBody CommentReportDTO dto) throws NullCommentException, CommentNotExistException, NullReasonException, NullContentException {
+        commentReportFilter.filter(dto);
+        CommentReportDTO result = commentReportService.save(dto);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import web.ozon.DTO.CommentDTO;
 import web.ozon.entity.CommentEntity;
+import web.ozon.repository.CommentRepository;
 
 @Service
 public class CommentConverter {
@@ -13,6 +14,8 @@ public class CommentConverter {
     private UserConverter userConverter;
     @Autowired
     private ProductConverter productConverter;
+    @Autowired
+    private CommentRepository commentRepository;
 
     public CommentEntity fromDTO(CommentDTO dto) {
         if (dto == null)
@@ -25,7 +28,7 @@ public class CommentConverter {
                 dto.getContent(),
                 dto.getIsAnonymous(),
                 dto.getIsDeleted() == null ? false : dto.getIsDeleted(),
-                dto.getIsChecked(),
+                dto.getIsChecked() == null ? false : dto.getIsChecked(),
                 dto.getIsReported() == null ? false : dto.getIsReported());
     }
 
@@ -42,5 +45,9 @@ public class CommentConverter {
                 entity.getIsDeleted(),
                 entity.getIsChecked(),
                 entity.getIsReported());
+    }
+
+    public CommentEntity fromId(Long id) {
+        return commentRepository.findById(id).orElse(null);
     }
 }

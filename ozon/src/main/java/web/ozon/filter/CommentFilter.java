@@ -30,7 +30,7 @@ public class CommentFilter {
     private int PAGINATION_STEP = 10;
     private int MAX_CONTENT_LENGTH = 255;
 
-    public void isOkNewDto(CommentDTO commentDTO)
+    public void filter(CommentDTO commentDTO)
             throws NullPointerException,
             NullAuthorIdException,
             NullProductIdException,

@@ -20,12 +20,12 @@ public class CommentReportConverter {
 
         return new CommentReportEntity(
                 dto.getId(),
-                commentConverter.fromDTO(dto.getComment()),
+                commentConverter.fromId(dto.getCommentId()),
                 dto.getReason(),
                 dto.getMessage(),
                 dto.getIsChecked(),
                 userConverter.fromDTO(dto.getChecker()),
-                dto.getIsDeleted());
+                dto.getIsDeleted() == null ? false : dto.getIsDeleted());
     }
 
     public CommentReportDTO fromEntity(CommentReportEntity entity) {
@@ -34,7 +34,7 @@ public class CommentReportConverter {
 
         return new CommentReportDTO(
                 entity.getId(),
-                commentConverter.fromEntity(entity.getComment()),
+                entity.getComment().getId(),
                 entity.getReason(),
                 entity.getMessage(),
                 entity.getIsChecked(),

@@ -10,7 +10,7 @@ public class CommentReportDTO {
 
     private Long id;
 
-    private CommentDTO comment;
+    private Long commentId;
 
     private ReportReason reason;
 
