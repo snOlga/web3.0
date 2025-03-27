@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.SystemException;
 import web.ozon.DTO.CommentReportDTO;
 import web.ozon.exception.CommentNotExistException;
 import web.ozon.exception.CommentReportNotExistException;
@@ -73,7 +77,9 @@ public class CommentReportController {
     @PatchMapping("/{id}")
     public ResponseEntity<CommentReportDTO> updateCommentReportByChecker(
             @PathVariable Long id,
-            @RequestBody CommentReportDTO dto) throws CommentReportNotExistException {
+            @RequestBody CommentReportDTO dto)
+            throws CommentReportNotExistException, SystemException, SecurityException, IllegalStateException,
+            RollbackException, HeuristicMixedException, HeuristicRollbackException {
         dto.setId(id);
         CommentReportDTO result = commentReportService.updateByChecker(dto);
         return result != null
