@@ -109,4 +109,10 @@ public class CommentExceptionHandler {
     public ResponseEntity<ExceptionDTO> handleReporterIsAuthorException(ReporterIsAuthorException ex) {
         return ResponseEntity.badRequest().body(new ExceptionDTO("Reporter cannot be the same as comment author"));
     }
+
+    @ExceptionHandler(CommentReportNotExistException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ExceptionDTO> handleCommentReportNotExistException(CommentReportNotExistException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionDTO("No such comment report"));
+    }
 }

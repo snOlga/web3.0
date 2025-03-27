@@ -1,10 +1,15 @@
 package web.ozon.filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import web.ozon.DTO.CommentReportDTO;
+import web.ozon.converter.UserConverter;
+import web.ozon.entity.UserEntity;
 import web.ozon.exception.CommentNotExistException;
+import web.ozon.exception.NotSameAuthorException;
 import web.ozon.exception.NullAuthorIdException;
 import web.ozon.exception.NullCommentException;
 import web.ozon.exception.NullContentException;
@@ -17,11 +22,15 @@ public class CommentReportFilter {
 
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private UserConverter userConverter;
 
     public void filter(CommentReportDTO dto)
-            throws NullCommentException, CommentNotExistException, NullReasonException, NullContentException, NullAuthorIdException, ReporterIsAuthorException {
+            throws NullCommentException, CommentNotExistException, NullReasonException, NullContentException,
+            NullAuthorIdException, ReporterIsAuthorException, NotSameAuthorException {
         isFieldsOk(dto);
         isCommentExists(dto);
+        isReporterTheSame(dto);
         isReporterNotCommentAuthor(dto);
     }
 
@@ -47,8 +56,16 @@ public class CommentReportFilter {
             throw new CommentNotExistException();
     }
 
+    private void isReporterTheSame(CommentReportDTO dto) throws NotSameAuthorException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        UserEntity user = userConverter.fromId(dto.getReporterId());
+        if (user == null || !user.getLogin().equals(currentPrincipalName))
+            throw new NotSameAuthorException();
+    }
+
     private void isReporterNotCommentAuthor(CommentReportDTO dto) throws ReporterIsAuthorException {
-        if(dto.getReporterId() == commentRepository.findById(dto.getCommentId()).get().getAuthor().getId())
+        if (dto.getReporterId() == commentRepository.findById(dto.getCommentId()).get().getAuthor().getId())
             throw new ReporterIsAuthorException();
     }
 }

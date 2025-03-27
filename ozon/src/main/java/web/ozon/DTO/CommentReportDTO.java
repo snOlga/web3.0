@@ -18,7 +18,7 @@ public class CommentReportDTO {
 
     private String message;
 
-    private Boolean isChecked;
+    private Boolean isAccepted;
 
     private UserDTO checker;
 

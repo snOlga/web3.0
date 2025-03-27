@@ -25,13 +25,15 @@ public class CommentService {
     private CommentConverter commentConverter;
     @Autowired
     private CommentRequestService commentRequestService;
-    
+
     @Value("${business.pagination.step}")
     private int PAGINATION_STEP;
 
     public List<CommentDTO> getAllByProductId(Long productId, int from) {
         return commentRepository.findAllByProductId(productId, PageRequest.of(from, PAGINATION_STEP)).stream()
-                .filter(comment -> comment.getIsChecked()).map(commentConverter::fromEntity).toList();
+                .filter(comment -> comment.getIsChecked())
+                .filter(comment -> !comment.getIsReported() || comment.getIsReported() == null)
+                .map(commentConverter::fromEntity).toList();
     }
 
     @Transactional

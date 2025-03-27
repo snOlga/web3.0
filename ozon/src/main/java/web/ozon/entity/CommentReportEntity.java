@@ -40,8 +40,8 @@ public class CommentReportEntity {
     @Column(name = "message")
     private String message;
 
-    @Column(name = "is_checked")
-    private Boolean isChecked;
+    @Column(name = "is_accepted")
+    private Boolean isAccepted;
 
     @ManyToOne
     @JoinColumn(name = "checker_id")

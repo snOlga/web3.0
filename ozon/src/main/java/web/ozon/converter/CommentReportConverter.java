@@ -24,7 +24,7 @@ public class CommentReportConverter {
                 userConverter.fromId(dto.getReporterId()),
                 dto.getReason(),
                 dto.getMessage(),
-                dto.getIsChecked(),
+                dto.getIsAccepted(),
                 userConverter.fromDTO(dto.getChecker()),
                 dto.getIsDeleted() == null ? false : dto.getIsDeleted());
     }
@@ -39,7 +39,7 @@ public class CommentReportConverter {
                 entity.getReporter().getId(),
                 entity.getReason(),
                 entity.getMessage(),
-                entity.getIsChecked(),
+                entity.getIsAccepted(),
                 userConverter.fromEntity(entity.getChecker()),
                 entity.getIsDeleted());
     }
