@@ -35,7 +35,8 @@ public class CommentsController {
 
     @PermitAll
     @GetMapping("/{productId}")
-    public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long productId, @RequestParam(name="from") Integer from) {
+    public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long productId,
+            @RequestParam(name = "from") Integer from) {
         return new ResponseEntity<>(commentService.getAllByProductId(productId, from), HttpStatus.OK);
     }
 
@@ -43,7 +44,8 @@ public class CommentsController {
     @PostMapping
     public ResponseEntity<CommentDTO> postComment(@RequestBody CommentDTO commentDTO)
             throws NullPointerException, NullAuthorIdException, NullProductIdException, NonNullNewIdException,
-            NullContentException, NullAnonException, NotSameAuthorException, CommentNotNewException, ProductNotBoughtException, RudeTextException, ContentTooLongException {
+            NullContentException, NullAnonException, NotSameAuthorException, CommentNotNewException,
+            ProductNotBoughtException, RudeTextException, ContentTooLongException {
         commentFilter.filter(commentDTO);
         CommentDTO result = commentService.save(commentDTO);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
@@ -51,7 +53,8 @@ public class CommentsController {
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @PatchMapping("/{id}")
-    public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) throws CommentNotExistException, NotSameAuthorException  {
+    public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO)
+            throws CommentNotExistException, NotSameAuthorException {
         commentDTO.setId(id);
         CommentDTO result = commentService.update(commentDTO);
         return result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
@@ -59,7 +62,8 @@ public class CommentsController {
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id) throws CommentNotExistException, NotSameAuthorException {
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id)
+            throws CommentNotExistException, NotSameAuthorException {
         return commentService.delete(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();

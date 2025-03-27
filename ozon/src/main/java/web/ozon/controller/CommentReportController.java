@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import web.ozon.DTO.CommentReportDTO;
 import web.ozon.exception.CommentNotExistException;
+import web.ozon.exception.NullAuthorIdException;
 import web.ozon.exception.NullCommentException;
 import web.ozon.exception.NullContentException;
 import web.ozon.exception.NullReasonException;
+import web.ozon.exception.ReporterIsAuthorException;
 import web.ozon.filter.CommentReportFilter;
 import web.ozon.service.CommentReportService;
 
@@ -54,7 +56,9 @@ public class CommentReportController {
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @PostMapping
-    public ResponseEntity<CommentReportDTO> postCommentReport(@RequestBody CommentReportDTO dto) throws NullCommentException, CommentNotExistException, NullReasonException, NullContentException {
+    public ResponseEntity<CommentReportDTO> postCommentReport(@RequestBody CommentReportDTO dto)
+            throws NullCommentException, CommentNotExistException, NullReasonException, NullContentException,
+            NullAuthorIdException, ReporterIsAuthorException {
         commentReportFilter.filter(dto);
         CommentReportDTO result = commentReportService.save(dto);
         return new ResponseEntity<>(result, HttpStatus.CREATED);

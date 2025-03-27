@@ -28,6 +28,11 @@ public class CommentReportEntity {
     private CommentEntity comment;
 
     @Nonnull
+    @ManyToOne
+    @JoinColumn(name = "reporter_id")
+    private UserEntity reporter;
+
+    @Nonnull
     @Enumerated(EnumType.STRING)
     @Column(name = "reason")
     private ReportReason reason;

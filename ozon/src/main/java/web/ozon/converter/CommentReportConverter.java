@@ -21,6 +21,7 @@ public class CommentReportConverter {
         return new CommentReportEntity(
                 dto.getId(),
                 commentConverter.fromId(dto.getCommentId()),
+                userConverter.fromId(dto.getReporterId()),
                 dto.getReason(),
                 dto.getMessage(),
                 dto.getIsChecked(),
@@ -35,6 +36,7 @@ public class CommentReportConverter {
         return new CommentReportDTO(
                 entity.getId(),
                 entity.getComment().getId(),
+                entity.getReporter().getId(),
                 entity.getReason(),
                 entity.getMessage(),
                 entity.getIsChecked(),

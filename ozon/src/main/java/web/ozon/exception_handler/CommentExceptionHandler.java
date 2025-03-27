@@ -103,4 +103,10 @@ public class CommentExceptionHandler {
     public ResponseEntity<ExceptionDTO> handleNullCommentException(NullCommentException ex) {
         return ResponseEntity.badRequest().body(new ExceptionDTO("Comment cannot be null"));
     }
+
+    @ExceptionHandler(ReporterIsAuthorException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ExceptionDTO> handleReporterIsAuthorException(ReporterIsAuthorException ex) {
+        return ResponseEntity.badRequest().body(new ExceptionDTO("Reporter cannot be the same as comment author"));
+    }
 }
