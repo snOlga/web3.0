@@ -30,7 +30,6 @@ public class CommentReportService {
     private UserRepository userRepository;
     @Autowired
     private CommentRepository commentRepository;
-    
 
     @Value("${business.pagination.step}")
     private int PAGINATION_STEP;
@@ -80,5 +79,9 @@ public class CommentReportService {
         CommentEntity commentEntity = commentRepository.findById(dto.getCommentId()).get();
         commentEntity.setIsReported(true);
         commentRepository.save(commentEntity);
+    }
+
+    public CommentReportDTO updateByUser(CommentReportDTO dto) {
+        return save(dto);
     }
 }

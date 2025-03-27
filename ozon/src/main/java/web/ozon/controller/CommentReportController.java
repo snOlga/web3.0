@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import web.ozon.DTO.CommentReportDTO;
-import web.ozon.DTO.CommentRequestDTO;
 import web.ozon.exception.CommentNotExistException;
 import web.ozon.exception.CommentReportNotExistException;
 import web.ozon.exception.NotSameAuthorException;
@@ -72,11 +71,26 @@ public class CommentReportController {
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MODER')")
     @PatchMapping("/{id}")
-    public ResponseEntity<CommentReportDTO> updateCommentReport(
+    public ResponseEntity<CommentReportDTO> updateCommentReportByChecker(
             @PathVariable Long id,
             @RequestBody CommentReportDTO dto) throws CommentReportNotExistException {
         dto.setId(id);
         CommentReportDTO result = commentReportService.updateByChecker(dto);
+        return result != null
+                ? ResponseEntity.ok(result)
+                : ResponseEntity.badRequest().build();
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @PutMapping("/{id}")
+    public ResponseEntity<CommentReportDTO> updateCommentReportByUser(
+            @PathVariable Long id,
+            @RequestBody CommentReportDTO dto)
+            throws CommentReportNotExistException, NullCommentException, CommentNotExistException, NullReasonException,
+            NullContentException, NullAuthorIdException, ReporterIsAuthorException, NotSameAuthorException {
+        dto.setId(id);
+        commentReportFilter.filter(dto);
+        CommentReportDTO result = commentReportService.updateByUser(dto);
         return result != null
                 ? ResponseEntity.ok(result)
                 : ResponseEntity.badRequest().build();
