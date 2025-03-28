@@ -11,7 +11,6 @@ import org.springframework.transaction.*;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import web.ozon.DTO.CommentReportDTO;
 import web.ozon.converter.CommentReportConverter;
 import web.ozon.entity.CommentEntity;
@@ -41,8 +40,8 @@ public class CommentReportService {
     @PostConstruct
     public void init() {
         definition = new DefaultTransactionDefinition();
-        definition.setIsolationLevel(TransactionDefinition.ISOLATION_REPEATABLE_READ);
-        definition.setTimeout(3);
+        definition.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
+        definition.setTimeout(10000);
     }
 
     @Value("${business.pagination.step}")
@@ -66,10 +65,10 @@ public class CommentReportService {
         return commentReportConverter.fromEntity(commentReportRepository.save(commentReportConverter.fromDTO(dto)));
     }
 
-    // @Transactional
     public CommentReportDTO updateByChecker(CommentReportDTO dto) throws CommentReportNotExistException {
         TransactionStatus transaction = transactionManager.getTransaction(definition);
-        CommentReportEntity entity = commentReportRepository.findById(dto.getId()).orElse(null);
+        Long id = dto.getId();
+        CommentReportEntity entity = commentReportRepository.findById(id).orElse(null);
         if (entity == null) {
             transactionManager.rollback(transaction);
             throw new CommentReportNotExistException();
@@ -77,7 +76,7 @@ public class CommentReportService {
 
         setCheckerAndAccepted(dto, entity);
         if (dto.getIsAccepted()) {
-            removeReportedComment(dto);
+            removeReportedComment(commentReportConverter.fromEntity(entity));
         }
         commentReportRepository.save(entity);
         transactionManager.commit(transaction);
@@ -92,7 +91,6 @@ public class CommentReportService {
         entity.setIsAccepted(dto.getIsAccepted());
     }
 
-    // @Transactional
     private void removeReportedComment(CommentReportDTO dto) {
         CommentEntity commentEntity = commentRepository.findById(dto.getCommentId()).get();
         commentEntity.setIsReported(true);

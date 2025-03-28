@@ -94,7 +94,8 @@ public class CommentReportController {
             @PathVariable Long id,
             @RequestBody CommentReportDTO dto)
             throws CommentReportNotExistException, NullCommentException, CommentNotExistException, NullReasonException,
-            NullContentException, NullAuthorIdException, ReporterIsAuthorException, NotSameAuthorException {
+            NullContentException, NullAuthorIdException, ReporterIsAuthorException, NotSameAuthorException,
+            CommentReportNotNewException {
         dto.setId(id);
         commentReportFilter.filter(dto);
         CommentReportDTO result = commentReportService.updateByUser(dto);

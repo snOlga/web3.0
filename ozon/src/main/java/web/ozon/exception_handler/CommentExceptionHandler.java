@@ -87,11 +87,11 @@ public class CommentExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionDTO("Comment content is too long"));
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ExceptionDTO> handleGenericException(Exception ex, WebRequest request) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionDTO("Something wrong..."));
-    }
+    // @ExceptionHandler(Exception.class)
+    // @ResponseStatus(HttpStatus.NOT_FOUND)
+    // public ResponseEntity<ExceptionDTO> handleGenericException(Exception ex, WebRequest request) {
+    //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionDTO("Something wrong..."));
+    // }
 
     @ExceptionHandler(NullReasonException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
