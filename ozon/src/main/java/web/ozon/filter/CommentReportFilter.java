@@ -9,12 +9,14 @@ import web.ozon.DTO.CommentReportDTO;
 import web.ozon.converter.UserConverter;
 import web.ozon.entity.UserEntity;
 import web.ozon.exception.CommentNotExistException;
+import web.ozon.exception.CommentReportNotNewException;
 import web.ozon.exception.NotSameAuthorException;
 import web.ozon.exception.NullAuthorIdException;
 import web.ozon.exception.NullCommentException;
 import web.ozon.exception.NullContentException;
 import web.ozon.exception.NullReasonException;
 import web.ozon.exception.ReporterIsAuthorException;
+import web.ozon.repository.CommentReportRepository;
 import web.ozon.repository.CommentRepository;
 
 @Service
@@ -24,14 +26,17 @@ public class CommentReportFilter {
     private CommentRepository commentRepository;
     @Autowired
     private UserConverter userConverter;
+    @Autowired
+    private CommentReportRepository commentReportRepository;
 
     public void filter(CommentReportDTO dto)
             throws NullCommentException, CommentNotExistException, NullReasonException, NullContentException,
-            NullAuthorIdException, ReporterIsAuthorException, NotSameAuthorException {
+            NullAuthorIdException, ReporterIsAuthorException, NotSameAuthorException, CommentReportNotNewException {
         isFieldsOk(dto);
         isCommentExists(dto);
         isReporterTheSame(dto);
         isReporterNotCommentAuthor(dto);
+        isReportNew(dto);
     }
 
     private void isFieldsOk(CommentReportDTO dto)
@@ -45,8 +50,6 @@ public class CommentReportFilter {
             throw new NullCommentException();
         if (dto.getReason() == null)
             throw new NullReasonException();
-        if (dto.getMessage() == null)
-            throw new NullContentException();
         if (dto.getReporterId() == null)
             throw new NullAuthorIdException();
     }
@@ -67,5 +70,10 @@ public class CommentReportFilter {
     private void isReporterNotCommentAuthor(CommentReportDTO dto) throws ReporterIsAuthorException {
         if (dto.getReporterId() == commentRepository.findById(dto.getCommentId()).get().getAuthor().getId())
             throw new ReporterIsAuthorException();
+    }
+
+    private void isReportNew(CommentReportDTO dto) throws CommentReportNotNewException {
+        if (commentReportRepository.findByCommentIdAndReporterId(dto.getCommentId(), dto.getReporterId()) != null)
+            throw new CommentReportNotNewException();
     }
 }

@@ -12,4 +12,6 @@ import web.ozon.entity.CommentReportEntity;
 public interface CommentReportRepository extends JpaRepository<CommentReportEntity, Long> {
 
     public List<CommentReportEntity> findAllByCommentId(Long commentId, Pageable pageable);
+
+    public CommentReportEntity findByCommentIdAndReporterId(Long commentId, Long reporterId);
 }

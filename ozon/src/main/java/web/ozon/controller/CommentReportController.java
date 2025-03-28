@@ -23,6 +23,7 @@ import jakarta.transaction.SystemException;
 import web.ozon.DTO.CommentReportDTO;
 import web.ozon.exception.CommentNotExistException;
 import web.ozon.exception.CommentReportNotExistException;
+import web.ozon.exception.CommentReportNotNewException;
 import web.ozon.exception.NotSameAuthorException;
 import web.ozon.exception.NullAuthorIdException;
 import web.ozon.exception.NullCommentException;
@@ -66,7 +67,7 @@ public class CommentReportController {
     @PostMapping
     public ResponseEntity<CommentReportDTO> postCommentReport(@RequestBody CommentReportDTO dto)
             throws NullCommentException, CommentNotExistException, NullReasonException, NullContentException,
-            NullAuthorIdException, ReporterIsAuthorException, NotSameAuthorException {
+            NullAuthorIdException, ReporterIsAuthorException, NotSameAuthorException, CommentReportNotNewException {
         dto.setIsAccepted(null);
         commentReportFilter.filter(dto);
         CommentReportDTO result = commentReportService.save(dto);
