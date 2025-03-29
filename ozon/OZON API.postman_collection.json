@@ -326,7 +326,7 @@
 			"name": "comments",
 			"item": [
 				{
-					"name": "/comments/{{productId}}/{{from}}",
+					"name": "/comments/{{productId}}?from",
 					"event": [
 						{
 							"listen": "test",
@@ -351,7 +351,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:{{localhost_port}}/comments/3/0",
+							"raw": "http://localhost:{{localhost_port}}/comments/3?from=0",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -359,8 +359,13 @@
 							"port": "{{localhost_port}}",
 							"path": [
 								"comments",
-								"3",
-								"0"
+								"3"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "0"
+								}
 							]
 						},
 						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
@@ -801,7 +806,7 @@
 					"response": []
 				},
 				{
-					"name": "/comments/{{productId}}/{{from}} Copy",
+					"name": "/comments/{{productId}}?from",
 					"event": [
 						{
 							"listen": "test",
@@ -826,7 +831,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:{{localhost_port}}/comments/3/0",
+							"raw": "http://localhost:{{localhost_port}}/comments/3?from=0",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -834,8 +839,13 @@
 							"port": "{{localhost_port}}",
 							"path": [
 								"comments",
-								"3",
-								"0"
+								"3"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "0"
+								}
 							]
 						},
 						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
@@ -894,7 +904,7 @@
 			"name": "comment-requests",
 			"item": [
 				{
-					"name": "/comment-requests/{{from}}",
+					"name": "/comment-requests?from",
 					"event": [
 						{
 							"listen": "test",
@@ -919,15 +929,20 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:{{localhost_port}}/comment-requests/0",
+							"raw": "http://localhost:{{localhost_port}}/comment-requests?from=0",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "{{localhost_port}}",
 							"path": [
-								"comment-requests",
-								"0"
+								"comment-requests"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "0"
+								}
 							]
 						},
 						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
@@ -935,7 +950,7 @@
 					"response": []
 				},
 				{
-					"name": "/comment-requests/unchecked/{{from}}",
+					"name": "/comment-requests/unchecked?from",
 					"event": [
 						{
 							"listen": "test",
@@ -960,7 +975,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:{{localhost_port}}/comment-requests/unchecked/0",
+							"raw": "http://localhost:{{localhost_port}}/comment-requests/unchecked?from=0",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -968,8 +983,13 @@
 							"port": "{{localhost_port}}",
 							"path": [
 								"comment-requests",
-								"unchecked",
-								"0"
+								"unchecked"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "0"
+								}
 							]
 						},
 						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
@@ -1032,7 +1052,7 @@
 					"response": []
 				},
 				{
-					"name": "/comment-requests/unchecked/{{from}} Copy 2",
+					"name": "/comment-requests/unchecked/{{from}}",
 					"event": [
 						{
 							"listen": "test",
@@ -1080,6 +1100,316 @@
 							"path": [
 								"comment-requests",
 								"4"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "comment-reports",
+			"item": [
+				{
+					"name": "comment-reports?from",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{jwt_admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:{{localhost_port}}/comment-reports?from=0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{localhost_port}}",
+							"path": [
+								"comment-reports"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "0"
+								}
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "/comment-reports/unchecked?from",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{jwt_admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:{{localhost_port}}/comment-reports/unchecked?from=0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{localhost_port}}",
+							"path": [
+								"comment-reports",
+								"unchecked"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "0"
+								}
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "/comment-reports/comment/id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{jwt_admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:{{localhost_port}}/comment-reports/comment/1?from=0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{localhost_port}}",
+							"path": [
+								"comment-reports",
+								"comment",
+								"1"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "0"
+								}
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "/comment-reports",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"commentId\": 1,\r\n  \"reporterId\": 3,\r\n  \"reason\": \"VIOLENCE\",\r\n  \"message\": \"hateful speech\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:{{localhost_port}}/comment-reports",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{localhost_port}}",
+							"path": [
+								"comment-reports"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "/comment-reports/{{id}}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{jwt_admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"isAccepted\": \"true\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:{{localhost_port}}/comment-reports/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{localhost_port}}",
+							"path": [
+								"comment-reports",
+								"1"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "/comment-reports/{{id}}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"commentId\": 2,\r\n  \"reporterId\": 3,\r\n  \"reason\": \"VIOLENCE\",\r\n  \"message\": \"hateful speech\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:{{localhost_port}}/comment-reports/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{localhost_port}}",
+							"path": [
+								"comment-reports",
+								"1"
 							]
 						},
 						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
