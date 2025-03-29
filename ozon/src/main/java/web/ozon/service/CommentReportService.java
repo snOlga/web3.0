@@ -22,7 +22,7 @@ import web.ozon.repository.CommentRepository;
 import web.ozon.repository.UserRepository;
 
 @Service
-public class CommentReportService {
+public class  CommentReportService {
 
     @Autowired
     private CommentReportRepository commentReportRepository;
