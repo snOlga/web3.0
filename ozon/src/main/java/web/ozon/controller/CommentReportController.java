@@ -42,20 +42,20 @@ public class CommentReportController {
     @Autowired
     private CommentReportFilter commentReportFilter;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MODER')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public ResponseEntity<List<CommentReportDTO>> getCommentReports(@RequestParam(name = "from") Integer from) {
         return new ResponseEntity<>(commentReportService.getAll(from), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MODER')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/unchecked")
     public ResponseEntity<List<CommentReportDTO>> getUncheckedCommentReports(
             @RequestParam(name = "from") Integer from) {
         return new ResponseEntity<>(commentReportService.getAllNotChecked(from), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MODER')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/comment/{id}")
     public ResponseEntity<List<CommentReportDTO>> getAllCommentReportsByCommentId(
             @PathVariable Long id,
@@ -74,7 +74,7 @@ public class CommentReportController {
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MODER')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<CommentReportDTO> updateCommentReportByChecker(
             @PathVariable Long id,
