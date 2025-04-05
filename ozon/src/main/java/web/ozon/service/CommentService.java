@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.security.core.Authentication;
 
 import web.ozon.DTO.CommentDTO;
@@ -25,6 +27,10 @@ public class CommentService {
     private CommentConverter commentConverter;
     @Autowired
     private CommentRequestService commentRequestService;
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+    @Autowired
+    private DefaultTransactionDefinition definition;
 
     @Value("${business.pagination.step}")
     private int PAGINATION_STEP;
@@ -36,9 +42,20 @@ public class CommentService {
                 .map(commentConverter::fromEntity).toList();
     }
 
-    @Transactional
     public CommentDTO save(CommentDTO commentDTO) throws CommentNotNewException, NonNullNewIdException {
-        isCommentNew(commentDTO);
+        TransactionStatus transaction = transactionManager.getTransaction(definition);
+        try {
+            isCommentNew(commentDTO);
+        } catch (Exception e) {
+            transactionManager.rollback(transaction);
+            throw e;
+        }
+        CommentDTO result = saveNoTrasaction(commentDTO);
+        transactionManager.commit(transaction);
+        return result;
+    }
+
+    private CommentDTO saveNoTrasaction(CommentDTO commentDTO) {
         CommentEntity commentEntity = commentConverter.fromDTO(commentDTO);
         commentRepository.save(commentEntity);
         CommentDTO result = commentConverter.fromEntity(commentEntity);
@@ -55,9 +72,22 @@ public class CommentService {
             throw new CommentNotNewException();
     }
 
-    @Transactional
     public CommentDTO update(CommentDTO commentDTO) throws CommentNotExistException, NotSameAuthorException {
-        isAbleToUpdateOrDelete(commentDTO.getId());
+        TransactionStatus transaction = transactionManager.getTransaction(definition);
+        try {
+            isAbleToUpdateOrDelete(commentDTO.getId());
+        } catch (Exception e) {
+            transactionManager.rollback(transaction);
+            throw e;
+        }
+
+        CommentDTO result = updateNoTransaction(commentDTO);
+
+        transactionManager.commit(transaction);
+        return result;
+    }
+
+    private CommentDTO updateNoTransaction(CommentDTO commentDTO) {
         CommentEntity existing = commentRepository.findById(commentDTO.getId()).get();
         if (!existing.getContent().equals(commentDTO.getContent())) {
             existing.setContent(commentDTO.getContent());
@@ -68,12 +98,20 @@ public class CommentService {
         return commentConverter.fromEntity(existing);
     }
 
-    @Transactional
     public boolean delete(Long id) throws CommentNotExistException, NotSameAuthorException {
-        isAbleToUpdateOrDelete(id);
+        TransactionStatus transaction = transactionManager.getTransaction(definition);
+        try {
+            isAbleToUpdateOrDelete(id);
+        } catch (Exception e) {
+            transactionManager.rollback(transaction);
+            throw e;
+        }
+
         CommentEntity comment = commentRepository.findById(id).orElse(null);
         comment.setIsDeleted(true);
         commentRepository.save(comment);
+
+        transactionManager.commit(transaction);
         return true;
     }
 

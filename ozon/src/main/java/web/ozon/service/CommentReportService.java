@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.*;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import jakarta.annotation.PostConstruct;
 import web.ozon.DTO.CommentReportDTO;
 import web.ozon.converter.CommentReportConverter;
 import web.ozon.entity.CommentEntity;
@@ -32,17 +31,10 @@ public class  CommentReportService {
     private UserRepository userRepository;
     @Autowired
     private CommentRepository commentRepository;
-
     @Autowired
     private PlatformTransactionManager transactionManager;
+    @Autowired
     private DefaultTransactionDefinition definition;
-
-    @PostConstruct
-    public void init() {
-        definition = new DefaultTransactionDefinition();
-        definition.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
-        definition.setTimeout(10000);
-    }
 
     @Value("${business.pagination.step}")
     private int PAGINATION_STEP;

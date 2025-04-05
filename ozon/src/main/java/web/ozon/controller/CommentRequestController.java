@@ -9,6 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import web.ozon.DTO.CommentRequestDTO;
+import web.ozon.exception.NullCommentException;
+import web.ozon.exception.NullContentException;
 import web.ozon.service.CommentRequestService;
 
 @RestController
@@ -35,7 +37,7 @@ public class CommentRequestController {
     @PutMapping("/{id}")
     public ResponseEntity<CommentRequestDTO> updateCommentRequest(
             @PathVariable Long id,
-            @RequestBody CommentRequestDTO dto) {
+            @RequestBody CommentRequestDTO dto) throws NullCommentException, NullContentException {
         dto.setId(id);
         CommentRequestDTO result = commentRequestService.update(dto);
         return result != null

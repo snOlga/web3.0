@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import web.ozon.DTO.CommentDTO;
 import web.ozon.DTO.CommentRequestDTO;
@@ -17,6 +18,8 @@ import web.ozon.converter.CommentRequestConverter;
 import web.ozon.entity.CommentEntity;
 import web.ozon.entity.CommentRequestEntity;
 import web.ozon.entity.UserEntity;
+import web.ozon.exception.NullCommentException;
+import web.ozon.exception.NullContentException;
 import web.ozon.repository.CommentRepository;
 import web.ozon.repository.CommentRequestRepository;
 import web.ozon.repository.UserRepository;
@@ -29,24 +32,26 @@ public class CommentRequestService {
     @Autowired
     private CommentRequestRepository commentRequestRepository;
     @Autowired
-    private SimpMessagingTemplate messagingTemplate;
-    @Autowired
     private CommentRequestConverter commentRequestConverter;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+    @Autowired
+    private DefaultTransactionDefinition definition;
 
     @Value("${business.pagination.step}")
     private int PAGINATION_STEP;
 
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void createRequest(CommentDTO commentDTO) {
+        definition.setIsolationLevel(TransactionDefinition.ISOLATION_READ_UNCOMMITTED);
+        TransactionStatus transaction = transactionManager.getTransaction(definition);
+
         CommentEntity commentEntity = commentRepository.findById(commentDTO.getId()).get();
         CommentRequestEntity commentRequestEntity = new CommentRequestEntity(null, commentEntity, null, null, false);
         commentRequestRepository.save(commentRequestEntity);
-        try {
-            messagingTemplate.convertAndSend("/topic/comment-request/" + commentRequestEntity.getId());
-        } catch (IllegalStateException e) {
-        }
+
+        transactionManager.commit(transaction);
     }
 
     public List<CommentRequestDTO> getAll(int from) {
@@ -58,29 +63,45 @@ public class CommentRequestService {
         return getAll(from).stream().filter(req -> !req.getIsChecked()).toList();
     }
 
-    @Transactional
-    public CommentRequestDTO update(CommentRequestDTO dto) {
+    public CommentRequestDTO update(CommentRequestDTO dto) throws NullCommentException, NullContentException {
+        TransactionStatus transaction = transactionManager.getTransaction(definition);
+        CommentRequestDTO result = null;
+        try {
+            updateNoTransaction(dto);
+            transactionManager.commit(transaction);
+        } catch (Exception e) {
+            transactionManager.rollback(transaction);
+            throw e;
+        }
+        return result;
+    }
+
+    private CommentRequestDTO updateNoTransaction(CommentRequestDTO dto)
+            throws NullCommentException, NullContentException {
         CommentRequestEntity entity = commentRequestRepository.findById(dto.getId())
                 .orElse(null);
-        if (entity == null || entity.getIsDeleted())
-            return null;
-
-        if (dto.getIsChecked() != null) {
-            entity.setIsChecked(dto.getIsChecked());
-            UserEntity checker = userRepository.findByLogin(
-                    SecurityContextHolder.getContext().getAuthentication().getName());
-            entity.setChecker(checker);
-
-            if (dto.getIsChecked()) {
-                entity.getComment().setIsChecked(true);
-                commentRepository.save(entity.getComment());
-            }
+        if (entity == null || entity.getIsDeleted()) {
+            throw new NullCommentException();
         }
+
+        if (dto.getIsChecked() == null) {
+            throw new NullContentException();
+        }
+
+        entity.setIsChecked(dto.getIsChecked());
+        UserEntity checker = userRepository.findByLogin(
+                SecurityContextHolder.getContext().getAuthentication().getName());
+        entity.setChecker(checker);
+        if (dto.getIsChecked()) {
+            entity.getComment().setIsChecked(true);
+            commentRepository.save(entity.getComment());
+        }
+
         commentRequestRepository.save(entity);
+
         return commentRequestConverter.fromEntity(entity);
     }
 
-    @Transactional
     public boolean delete(Long id) {
         CommentRequestEntity entity = commentRequestRepository.findById(id)
                 .orElse(null);
