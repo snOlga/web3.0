@@ -14,22 +14,12 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>admin</name>
 	<description>Demo project for Spring Boot</description>
-	<url />
-	<licenses>
-		<license />
-	</licenses>
-	<developers>
-		<developer />
-	</developers>
-	<scm>
-		<connection />
-		<developerConnection />
-		<tag />
-		<url />
-	</scm>
+
 	<properties>
 		<java.version>17</java.version>
+		<basedir>D:\ITMO\3_year\business_logic\web3.0</basedir>
 	</properties>
+
 	<dependencies>
 		<!-- <dependency>
 			<groupId>org.springframework.boot</groupId>
