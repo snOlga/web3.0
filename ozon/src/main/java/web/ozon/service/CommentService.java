@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -31,11 +32,16 @@ public class CommentService {
     private PlatformTransactionManager transactionManager;
     @Autowired
     private DefaultTransactionDefinition definition;
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Value("${business.pagination.step}")
     private int PAGINATION_STEP;
+    @Value(value = "${kafka.custom.topicname.comment}")
+    private String topicCommentsName;
 
     public List<CommentDTO> getAllByProductId(Long productId, int from) {
+        sendMessage("hiiii");
         return commentRepository.findAllByProductId(productId, PageRequest.of(from, PAGINATION_STEP)).stream()
                 .filter(comment -> comment.getIsChecked())
                 .filter(comment -> !comment.getIsReported() || comment.getIsReported() == null)
@@ -53,6 +59,10 @@ public class CommentService {
         CommentDTO result = saveNoTrasaction(commentDTO);
         transactionManager.commit(transaction);
         return result;
+    }
+
+    public void sendMessage(String msg) {
+        kafkaTemplate.send(topicCommentsName, msg);
     }
 
     private CommentDTO saveNoTrasaction(CommentDTO commentDTO) {

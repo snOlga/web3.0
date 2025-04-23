@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -39,11 +40,16 @@ public class CommentRequestService {
     private PlatformTransactionManager transactionManager;
     @Autowired
     private DefaultTransactionDefinition definition;
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Value("${business.pagination.step}")
     private int PAGINATION_STEP;
+    @Value(value = "${kafka.custom.topicname.comment}")
+    private String topicCommentsName;
 
     public void createRequest(CommentDTO commentDTO) {
+        sendMessage("hi!");
         definition.setIsolationLevel(TransactionDefinition.ISOLATION_READ_UNCOMMITTED);
         TransactionStatus transaction = transactionManager.getTransaction(definition);
 
@@ -52,6 +58,10 @@ public class CommentRequestService {
         commentRequestRepository.save(commentRequestEntity);
 
         transactionManager.commit(transaction);
+    }
+
+    public void sendMessage(String msg) {
+        kafkaTemplate.send(topicCommentsName, msg);
     }
 
     public List<CommentRequestDTO> getAll(int from) {
