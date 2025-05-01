@@ -13,11 +13,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.security.core.Authentication;
 
-import web.ozon.DTO.CommentDTO;
-import web.ozon.converter.CommentConverter;
-import web.ozon.entity.CommentEntity;
-import web.ozon.exception.*;
-import web.ozon.repository.CommentRepository;
+import lib.entity.dto.DTO.CommentDTO;
+import lib.entity.dto.converter.CommentConverter;
+import lib.entity.dto.entity.CommentEntity;
+import lib.entity.dto.exception.*;
+import lib.entity.dto.repository.CommentRepository;
 
 @Service
 public class CommentService {

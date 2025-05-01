@@ -8,14 +8,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import web.ozon.DTO.CommentDTO;
-import web.ozon.converter.UserConverter;
-import web.ozon.entity.BannedWordEntity;
-import web.ozon.entity.PurchaseEntity;
-import web.ozon.entity.UserEntity;
-import web.ozon.exception.*;
-import web.ozon.repository.BannedWordsRepository;
-import web.ozon.repository.PurchaseRepository;
+import lib.entity.dto.DTO.CommentDTO;
+import lib.entity.dto.converter.UserConverter;
+import lib.entity.dto.entity.BannedWordEntity;
+import lib.entity.dto.entity.PurchaseEntity;
+import lib.entity.dto.entity.UserEntity;
+import lib.entity.dto.exception.*;
+import lib.entity.dto.repository.BannedWordsRepository;
+import lib.entity.dto.repository.PurchaseRepository;
 
 @Service
 public class CommentFilter {

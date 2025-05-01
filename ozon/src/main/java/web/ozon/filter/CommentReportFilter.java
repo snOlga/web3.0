@@ -5,19 +5,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import web.ozon.DTO.CommentReportDTO;
-import web.ozon.converter.UserConverter;
-import web.ozon.entity.UserEntity;
-import web.ozon.exception.CommentNotExistException;
-import web.ozon.exception.CommentReportNotNewException;
-import web.ozon.exception.NotSameAuthorException;
-import web.ozon.exception.NullAuthorIdException;
-import web.ozon.exception.NullCommentException;
-import web.ozon.exception.NullContentException;
-import web.ozon.exception.NullReasonException;
-import web.ozon.exception.ReporterIsAuthorException;
-import web.ozon.repository.CommentReportRepository;
-import web.ozon.repository.CommentRepository;
+import lib.entity.dto.DTO.CommentReportDTO;
+import lib.entity.dto.converter.UserConverter;
+import lib.entity.dto.entity.UserEntity;
+import lib.entity.dto.exception.CommentNotExistException;
+import lib.entity.dto.exception.CommentReportNotNewException;
+import lib.entity.dto.exception.NotSameAuthorException;
+import lib.entity.dto.exception.NullAuthorIdException;
+import lib.entity.dto.exception.NullCommentException;
+import lib.entity.dto.exception.NullContentException;
+import lib.entity.dto.exception.NullReasonException;
+import lib.entity.dto.exception.ReporterIsAuthorException;
+import lib.entity.dto.repository.CommentReportRepository;
+import lib.entity.dto.repository.CommentRepository;
 
 @Service
 public class CommentReportFilter {

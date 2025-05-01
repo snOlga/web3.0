@@ -5,10 +5,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import lib.entity.dto.entity.UserEntity;
+import lib.entity.dto.repository.UserRepository;
+
 import org.springframework.security.core.Authentication;
 
-import web.ozon.entity.UserEntity;
-import web.ozon.repository.UserRepository;
 import web.ozon.security.SecurityJwtTokenProvider;
 import web.ozon.security.SecurityUser;
 

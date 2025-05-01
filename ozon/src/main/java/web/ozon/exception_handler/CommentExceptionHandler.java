@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import web.ozon.DTO.ExceptionDTO;
-import web.ozon.exception.*;
+import lib.entity.dto.DTO.ExceptionDTO;
+import lib.entity.dto.exception.*;
 
 import org.springframework.http.ResponseEntity;
 

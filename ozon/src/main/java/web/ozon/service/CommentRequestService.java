@@ -13,17 +13,17 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import web.ozon.DTO.CommentDTO;
-import web.ozon.DTO.CommentRequestDTO;
-import web.ozon.converter.CommentRequestConverter;
-import web.ozon.entity.CommentEntity;
-import web.ozon.entity.CommentRequestEntity;
-import web.ozon.entity.UserEntity;
-import web.ozon.exception.NullCommentException;
-import web.ozon.exception.NullContentException;
-import web.ozon.repository.CommentRepository;
-import web.ozon.repository.CommentRequestRepository;
-import web.ozon.repository.UserRepository;
+import lib.entity.dto.DTO.CommentDTO;
+import lib.entity.dto.DTO.CommentRequestDTO;
+import lib.entity.dto.converter.CommentRequestConverter;
+import lib.entity.dto.entity.CommentEntity;
+import lib.entity.dto.entity.CommentRequestEntity;
+import lib.entity.dto.entity.UserEntity;
+import lib.entity.dto.exception.NullCommentException;
+import lib.entity.dto.exception.NullContentException;
+import lib.entity.dto.repository.CommentRepository;
+import lib.entity.dto.repository.CommentRequestRepository;
+import lib.entity.dto.repository.UserRepository;
 
 @Service
 public class CommentRequestService {

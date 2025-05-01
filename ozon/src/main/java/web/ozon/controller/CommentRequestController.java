@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import web.ozon.DTO.CommentRequestDTO;
-import web.ozon.exception.NullCommentException;
-import web.ozon.exception.NullContentException;
+import lib.entity.dto.DTO.CommentRequestDTO;
+import lib.entity.dto.exception.NullCommentException;
+import lib.entity.dto.exception.NullContentException;
 import web.ozon.service.CommentRequestService;
 
 @RestController

@@ -114,8 +114,6 @@
 			<groupId>entity.dto</groupId>
 			<artifactId>lib</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-			<scope>system</scope>
-			<systemPath>D:\ITMO\3_year\business_logic\web3.0\dto\target\lib-0.0.1-SNAPSHOT.jar</systemPath>
 			<type>jar</type>
 		</dependency>
 	</dependencies>

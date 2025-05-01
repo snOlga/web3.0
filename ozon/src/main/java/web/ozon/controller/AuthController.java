@@ -1,7 +1,7 @@
 package web.ozon.controller;
 
-import web.ozon.DTO.AuthUserDTO;
-import web.ozon.DTO.TokenDTO;
+import lib.entity.dto.DTO.AuthUserDTO;
+import lib.entity.dto.DTO.TokenDTO;
 import web.ozon.service.AuthService;
 
 import org.springframework.beans.factory.annotation.Autowired;

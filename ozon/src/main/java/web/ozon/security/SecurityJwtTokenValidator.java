@@ -5,8 +5,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import web.ozon.entity.UserEntity;
-import web.ozon.repository.UserRepository;
+import lib.entity.dto.entity.UserEntity;
+import lib.entity.dto.repository.UserRepository;
 
 import java.io.IOException;
 

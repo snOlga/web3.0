@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import web.ozon.entity.CommentEntity;
-import web.ozon.entity.ProductEntity;
-import web.ozon.entity.PurchaseEntity;
-import web.ozon.entity.UserEntity;
-import web.ozon.repository.CommentRepository;
-import web.ozon.repository.ProductRepository;
-import web.ozon.repository.PurchaseRepository;
-import web.ozon.repository.UserRepository;
+import lib.entity.dto.entity.CommentEntity;
+import lib.entity.dto.entity.ProductEntity;
+import lib.entity.dto.entity.PurchaseEntity;
+import lib.entity.dto.entity.UserEntity;
+import lib.entity.dto.repository.CommentRepository;
+import lib.entity.dto.repository.ProductRepository;
+import lib.entity.dto.repository.PurchaseRepository;
+import lib.entity.dto.repository.UserRepository;
 
 @SpringBootTest
 class OzonApplicationTests {

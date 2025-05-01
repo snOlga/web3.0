@@ -10,15 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.*;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import web.ozon.DTO.CommentReportDTO;
-import web.ozon.converter.CommentReportConverter;
-import web.ozon.entity.CommentEntity;
-import web.ozon.entity.CommentReportEntity;
-import web.ozon.entity.UserEntity;
-import web.ozon.exception.CommentReportNotExistException;
-import web.ozon.repository.CommentReportRepository;
-import web.ozon.repository.CommentRepository;
-import web.ozon.repository.UserRepository;
+import lib.entity.dto.DTO.CommentReportDTO;
+import lib.entity.dto.converter.CommentReportConverter;
+import lib.entity.dto.entity.CommentEntity;
+import lib.entity.dto.entity.CommentReportEntity;
+import lib.entity.dto.entity.UserEntity;
+import lib.entity.dto.exception.CommentReportNotExistException;
+import lib.entity.dto.repository.*;
 
 @Service
 public class  CommentReportService {
