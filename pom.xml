@@ -8,6 +8,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ozon</name>
 	<description>business logic</description>
+	<packaging>pom</packaging>
 
 	<properties>
 		<java.version>17</java.version>

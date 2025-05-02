@@ -33,15 +33,14 @@ public class CommentService {
     @Autowired
     private DefaultTransactionDefinition definition;
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private KafkaTemplate<String, CommentDTO> kafkaTemplate;
 
     @Value("${business.pagination.step}")
     private int PAGINATION_STEP;
     @Value(value = "${kafka.custom.topicname.comment}")
-    private String topicCommentsName;
+    private String topicNameComments;
 
     public List<CommentDTO> getAllByProductId(Long productId, int from) {
-        sendMessage("hiiii");
         return commentRepository.findAllByProductId(productId, PageRequest.of(from, PAGINATION_STEP)).stream()
                 .filter(comment -> comment.getIsChecked())
                 .filter(comment -> !comment.getIsReported() || comment.getIsReported() == null)
@@ -61,16 +60,17 @@ public class CommentService {
         return result;
     }
 
-    public void sendMessage(String msg) {
-        kafkaTemplate.send(topicCommentsName, msg);
-    }
-
     private CommentDTO saveNoTrasaction(CommentDTO commentDTO) {
         CommentEntity commentEntity = commentConverter.fromDTO(commentDTO);
         commentRepository.save(commentEntity);
         CommentDTO result = commentConverter.fromEntity(commentEntity);
+        sendMessageToAdmin(result);
         commentRequestService.createRequest(result);
         return result;
+    }
+
+    public void sendMessageToAdmin(CommentDTO msg) {
+        kafkaTemplate.send(topicNameComments, msg);
     }
 
     private void isCommentNew(CommentDTO commentDTO) throws CommentNotNewException, NonNullNewIdException {

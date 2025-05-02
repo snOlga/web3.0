@@ -24,8 +24,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs*/**").permitAll()
-                        .requestMatchers("/comments/**").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(validator, UsernamePasswordAuthenticationFilter.class)
                 .cors((cors) -> cors.disable())

@@ -31,9 +31,9 @@ public class CommentRequestService {
     @Autowired
     private CommentRequestRepository commentRequestRepository;
     @Autowired
-    private CommentRequestConverter commentRequestConverter;
-    @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CommentRequestConverter commentRequestConverter;
     @Autowired
     private PlatformTransactionManager transactionManager;
     @Autowired
