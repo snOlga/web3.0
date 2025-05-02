@@ -1,4 +1,4 @@
-package web.ozon.security;
+package lib.entity.dto.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

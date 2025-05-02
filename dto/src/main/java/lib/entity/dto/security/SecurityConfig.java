@@ -1,4 +1,4 @@
-package web.ozon.security;
+package lib.entity.dto.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,8 +24,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/**").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .addFilterBefore(validator, UsernamePasswordAuthenticationFilter.class)
                 .cors((cors) -> cors.disable())
                 .csrf((csrf) -> csrf.disable())

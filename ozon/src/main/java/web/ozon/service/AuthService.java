@@ -8,11 +8,10 @@ import org.springframework.stereotype.Service;
 
 import lib.entity.dto.entity.UserEntity;
 import lib.entity.dto.repository.UserRepository;
+import lib.entity.dto.security.SecurityJwtTokenProvider;
+import lib.entity.dto.security.SecurityUser;
 
 import org.springframework.security.core.Authentication;
-
-import web.ozon.security.SecurityJwtTokenProvider;
-import web.ozon.security.SecurityUser;
 
 @Service
 public class AuthService {

@@ -1,4 +1,4 @@
-package web.ozon.security;
+package lib.entity.dto.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

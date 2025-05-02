@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "lib.entity.dto.repository")
 @EntityScan(basePackages = "lib.entity.dto.entity")
 @ComponentScan(basePackages = "lib")
+@ComponentScan
 public class AdminApplication {
 
 	public static void main(String[] args) {
