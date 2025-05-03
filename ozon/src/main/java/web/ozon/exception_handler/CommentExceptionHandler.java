@@ -87,14 +87,14 @@ public class CommentExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionDTO("Comment content is too long"));
     }
 
-    // @ExceptionHandler(Exception.class)
-    // public ResponseEntity<ExceptionDTO> handleGenericException(Exception ex, WebRequest request) {
-    //     if (request.getDescription(false).contains("/auth/log") || request.getDescription(false).contains("/auth/sign")) {
-    //         return null;
-    //     }
-    //     return ResponseEntity.status(HttpStatus.FORBIDDEN)
-    //             .body(new ExceptionDTO("Forbidden"));
-    // }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionDTO> handleGenericException(Exception ex, WebRequest request) {
+        if (request.getDescription(false).contains("/auth/log") || request.getDescription(false).contains("/auth/sign")) {
+            return null;
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ExceptionDTO("Forbidden"));
+    }
 
     @ExceptionHandler(NullReasonException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

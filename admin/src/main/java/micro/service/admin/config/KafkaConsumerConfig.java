@@ -19,7 +19,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 public class KafkaConsumerConfig {
 
   @Value(value = "${spring.kafka.bootstrap-servers}")
-  private String bootstrapAddress = "locahost:9093";
+  private String bootstrapAddress;
 
   @Bean
   public ConsumerFactory<String, Long> consumerFactory() {
@@ -29,7 +29,7 @@ public class KafkaConsumerConfig {
         bootstrapAddress);
     props.put(
         ConsumerConfig.GROUP_ID_CONFIG,
-        "foo");
+        "admin");
     props.put(
         ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
         StringDeserializer.class);

@@ -82,13 +82,10 @@ public class CommentRequestService {
             throws NullCommentException, NullContentException {
         CommentRequestEntity entity = commentRequestRepository.findById(dto.getId())
                 .orElse(null);
-        if (entity == null || entity.getIsDeleted()) {
+        if (entity == null || entity.getIsDeleted())
             throw new NullCommentException();
-        }
-
-        if (dto.getIsChecked() == null) {
+        if (dto.getIsChecked() == null)
             throw new NullContentException();
-        }
 
         entity.setIsChecked(dto.getIsChecked());
         UserEntity checker = userRepository.findByLogin(
@@ -100,7 +97,6 @@ public class CommentRequestService {
         }
 
         commentRequestRepository.save(entity);
-
         return commentRequestConverter.fromEntity(entity);
     }
 

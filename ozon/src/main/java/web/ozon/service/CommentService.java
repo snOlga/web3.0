@@ -27,8 +27,6 @@ public class CommentService {
     @Autowired
     private CommentConverter commentConverter;
     @Autowired
-    private CommentRequestService commentRequestService;
-    @Autowired
     private PlatformTransactionManager transactionManager;
     @Autowired
     private DefaultTransactionDefinition definition;
@@ -64,13 +62,8 @@ public class CommentService {
         CommentEntity commentEntity = commentConverter.fromDTO(commentDTO);
         commentRepository.save(commentEntity);
         CommentDTO result = commentConverter.fromEntity(commentEntity);
-        sendMessageToAdmin(result);
-        // commentRequestService.createRequest(result);
+        kafkaTemplate.send(topicNameComments, result.getId());
         return result;
-    }
-
-    public void sendMessageToAdmin(CommentDTO msg) {
-        kafkaTemplate.send(topicNameComments, msg.getId());
     }
 
     private void isCommentNew(CommentDTO commentDTO) throws CommentNotNewException, NonNullNewIdException {
@@ -103,7 +96,7 @@ public class CommentService {
             existing.setContent(commentDTO.getContent());
             existing.setIsChecked(false);
             commentRepository.save(existing);
-            commentRequestService.createRequest(commentDTO);
+            kafkaTemplate.send(topicNameComments, commentDTO.getId());
         }
         return commentConverter.fromEntity(existing);
     }

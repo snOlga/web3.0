@@ -1,4 +1,4 @@
-package web.ozon.controller;
+package micro.service.admin.controller;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import lib.entity.dto.DTO.CommentRequestDTO;
 import lib.entity.dto.exception.NullCommentException;
 import lib.entity.dto.exception.NullContentException;
-import web.ozon.service.CommentRequestService;
+import micro.service.admin.service.CommentRequestService;
 
 @RestController
 @RequestMapping("/comment-requests")
