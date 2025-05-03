@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,7 @@ public class KafkaConsumerConfig {
   private String bootstrapAddress = "locahost:9093";
 
   @Bean
-  public ConsumerFactory<String, String> consumerFactory() {
+  public ConsumerFactory<String, Long> consumerFactory() {
     Map<String, Object> props = new HashMap<>();
     props.put(
         ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
@@ -34,14 +35,13 @@ public class KafkaConsumerConfig {
         StringDeserializer.class);
     props.put(
         ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-        StringDeserializer.class);
+        LongDeserializer.class);
     return new DefaultKafkaConsumerFactory<>(props);
   }
 
   @Bean
-  public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
-
-    ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+  public ConcurrentKafkaListenerContainerFactory<String, Long> kafkaListenerContainerFactory() {
+    ConcurrentKafkaListenerContainerFactory<String, Long> factory = new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(consumerFactory());
     return factory;
   }

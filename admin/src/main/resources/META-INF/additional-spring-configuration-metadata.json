@@ -8,5 +8,15 @@
     "name": "kafka.custom.topicname.report",
     "type": "java.lang.String",
     "description": "A description for 'kafka.custom.topicname.report'"
+  },
+  {
+    "name": "security.jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'security.jwt.secret'"
+  },
+  {
+    "name": "business.pagination.step",
+    "type": "java.lang.String",
+    "description": "A description for 'business.pagination.step'"
   }
 ]}

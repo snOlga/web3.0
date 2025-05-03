@@ -33,7 +33,7 @@ public class CommentService {
     @Autowired
     private DefaultTransactionDefinition definition;
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private KafkaTemplate<String, Long> kafkaTemplate;
 
     @Value("${business.pagination.step}")
     private int PAGINATION_STEP;
@@ -70,7 +70,7 @@ public class CommentService {
     }
 
     public void sendMessageToAdmin(CommentDTO msg) {
-        kafkaTemplate.send(topicNameComments, "msg.getId()");
+        kafkaTemplate.send(topicNameComments, msg.getId());
     }
 
     private void isCommentNew(CommentDTO commentDTO) throws CommentNotNewException, NonNullNewIdException {

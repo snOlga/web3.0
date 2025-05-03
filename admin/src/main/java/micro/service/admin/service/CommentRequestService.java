@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import lib.entity.dto.DTO.CommentDTO;
 import lib.entity.dto.DTO.CommentRequestDTO;
 import lib.entity.dto.converter.CommentRequestConverter;
 import lib.entity.dto.entity.CommentEntity;
@@ -42,13 +42,17 @@ public class CommentRequestService {
     @Value("${business.pagination.step}")
     private int PAGINATION_STEP;
 
-    public void createRequest(CommentDTO commentDTO) {
+    @KafkaListener(topics = "${kafka.custom.topicname.comment}")
+    public void createRequest(Long CommentId) {
         TransactionStatus transaction = transactionManager.getTransaction(definition);
-
-        CommentEntity commentEntity = commentRepository.findById(commentDTO.getId()).get();
-        CommentRequestEntity commentRequestEntity = new CommentRequestEntity(null, commentEntity, null, null, false);
-        commentRequestRepository.save(commentRequestEntity);
-
+        try {
+            CommentEntity commentEntity = commentRepository.findById(CommentId).get();
+            CommentRequestEntity commentRequestEntity = new CommentRequestEntity(null, commentEntity, null, null,
+                    false);
+            commentRequestRepository.save(commentRequestEntity);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
         transactionManager.commit(transaction);
     }
 
