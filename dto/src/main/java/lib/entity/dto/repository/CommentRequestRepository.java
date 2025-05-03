@@ -11,4 +11,6 @@ import lib.entity.dto.entity.CommentRequestEntity;
 public interface CommentRequestRepository extends JpaRepository<CommentRequestEntity, Long> {
 
     public List<CommentRequestEntity> findByIsChecked(Boolean isChecked);
+
+    public long countByIsChecked(Boolean isChecked);
 }

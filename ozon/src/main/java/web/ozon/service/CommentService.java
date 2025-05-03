@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -101,6 +102,7 @@ public class CommentService {
         return commentConverter.fromEntity(existing);
     }
 
+    @KafkaListener(topics = "${kafka.custom.topicname.deleted_comments}")
     public boolean delete(Long id) throws CommentNotExistException, NotSameAuthorException {
         TransactionStatus transaction = transactionManager.getTransaction(definition);
         try {

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -38,27 +40,35 @@ public class CommentRequestService {
     private PlatformTransactionManager transactionManager;
     @Autowired
     private DefaultTransactionDefinition definition;
+    @Autowired
+    private KafkaTemplate<String, Long> kafkaTemplate;
 
     @Value("${business.pagination.step}")
     private int PAGINATION_STEP;
+    @Value(value = "${kafka.custom.topicname.deleted_comments}")
+    private String topicNameDeletedComments;
 
     @KafkaListener(topics = "${kafka.custom.topicname.comment}")
-    public void createRequest(Long CommentId) {
+    public void createRequest(Long commentId) {
         TransactionStatus transaction = transactionManager.getTransaction(definition);
         try {
-            CommentEntity commentEntity = commentRepository.findById(CommentId).get();
+            CommentEntity commentEntity = commentRepository.findById(commentId).get();
             CommentRequestEntity commentRequestEntity = new CommentRequestEntity(null, commentEntity, null, null,
                     false);
             commentRequestRepository.save(commentRequestEntity);
+            transactionManager.commit(transaction);
         } catch (Exception e) {
-            // TODO: handle exception
+            kafkaTemplate.send(topicNameDeletedComments, commentId);
+            transactionManager.rollback(transaction);
         }
-        transactionManager.commit(transaction);
+    }
+
+    private List<CommentRequestEntity> getAllEntity(int from) {
+        return commentRequestRepository.findAll(PageRequest.of(from, PAGINATION_STEP)).getContent();
     }
 
     public List<CommentRequestDTO> getAll(int from) {
-        return commentRequestRepository.findAll(PageRequest.of(from, PAGINATION_STEP)).getContent().stream()
-                .map(commentRequestConverter::fromEntity).toList();
+        return getAllEntity(from).stream().map(commentRequestConverter::fromEntity).toList();
     }
 
     public List<CommentRequestDTO> getAllNotChecked(int from) {
@@ -108,5 +118,23 @@ public class CommentRequestService {
         entity.setIsDeleted(true);
         commentRequestRepository.save(entity);
         return true;
+    }
+
+    @Scheduled(fixedDelay = 10000)
+    public void scheduleFixedDelayTask() {
+        TransactionStatus transaction = transactionManager.getTransaction(definition);
+        for (int i = 0; i < commentRequestRepository.count(); i++) {
+            List<CommentRequestEntity> pack = getAllEntity(i);
+
+            for (CommentRequestEntity request : pack.stream().filter(request -> request.getIsChecked() != null)
+                    .toList()) {
+                request.setIsDeleted(true);
+                commentRequestRepository.save(request);
+
+                if (!request.getIsChecked())
+                    kafkaTemplate.send(topicNameDeletedComments, request.getComment().getId());
+            }
+        }
+        transactionManager.commit(transaction);
     }
 }
