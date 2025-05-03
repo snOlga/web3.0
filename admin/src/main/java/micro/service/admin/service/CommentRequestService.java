@@ -69,7 +69,7 @@ public class CommentRequestService {
         TransactionStatus transaction = transactionManager.getTransaction(definition);
         CommentRequestDTO result = null;
         try {
-            updateNoTransaction(dto);
+            result = updateNoTransaction(dto);
             transactionManager.commit(transaction);
         } catch (Exception e) {
             transactionManager.rollback(transaction);

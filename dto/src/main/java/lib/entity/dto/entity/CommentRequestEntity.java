@@ -5,7 +5,6 @@ import org.hibernate.annotations.Where;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Null;
 import lombok.*;
 
 @Setter
@@ -27,11 +26,9 @@ public class CommentRequestEntity {
     @JoinColumn(name = "comment_id")
     private CommentEntity comment;
 
-    @Null
     @Column(name = "is_checked")
     private Boolean isChecked;
 
-    @Null
     @ManyToOne
     @JoinColumn(name = "checker_id")
     private UserEntity checker;
