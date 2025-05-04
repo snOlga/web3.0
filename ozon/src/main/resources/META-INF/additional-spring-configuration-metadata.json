@@ -18,5 +18,10 @@
     "name": "kafka.custom.topicname.report",
     "type": "java.lang.String",
     "description": "A description for 'kafka.custom.topicname.report'"
+  },
+  {
+    "name": "kafka.custom.topicname.deleted_comments",
+    "type": "java.lang.String",
+    "description": "A description for 'kafka.custom.topicname.deleted_comments'"
   }
 ]}

@@ -17,7 +17,7 @@ public class KafkaTopicConfig {
     private String bootstrapAddress;
     @Value(value = "${kafka.custom.topicname.comment}")
     private String topicCommentsName;
-    @Value(value = "${kafka.custom.topicname.report}")
+    @Value(value = "${kafka.custom.topicname.deleted_comments}")
     private String topicReporstsName;
 
     @Bean

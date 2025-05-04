@@ -101,8 +101,7 @@ public class CommentService {
         }
         return commentConverter.fromEntity(existing);
     }
-
-    @KafkaListener(topics = "${kafka.custom.topicname.deleted_comments}")
+    
     public boolean delete(Long id) throws CommentNotExistException, NotSameAuthorException {
         TransactionStatus transaction = transactionManager.getTransaction(definition);
         try {
@@ -111,11 +110,7 @@ public class CommentService {
             transactionManager.rollback(transaction);
             throw e;
         }
-
-        CommentEntity comment = commentRepository.findById(id).orElse(null);
-        comment.setIsDeleted(true);
-        commentRepository.save(comment);
-
+        deleteForce(id);
         transactionManager.commit(transaction);
         return true;
     }
@@ -132,5 +127,14 @@ public class CommentService {
 
         if (!isOwner && !isAdmin)
             throw new NotSameAuthorException();
+    }
+
+    @KafkaListener(topics = "${kafka.custom.topicname.deleted_comments}")
+    public void deleteForce(Long id) {
+        TransactionStatus transaction = transactionManager.getTransaction(definition);
+        CommentEntity comment = commentRepository.findById(id).orElse(null);
+        comment.setIsDeleted(true);
+        commentRepository.save(comment);
+        transactionManager.commit(transaction);
     }
 }
