@@ -48,6 +48,9 @@ public class CommentRequestService {
     @Value(value = "${kafka.custom.topicname.deleted_comments}")
     private String topicNameDeletedComments;
 
+    @Autowired
+    private Bitrix24Service bitrix24Service;
+
     @KafkaListener(topics = "${kafka.custom.topicname.comment}")
     public void createRequest(Long commentId) {
         TransactionStatus transaction = transactionManager.getTransaction(definition);
@@ -56,11 +59,42 @@ public class CommentRequestService {
             CommentRequestEntity commentRequestEntity = new CommentRequestEntity(null, commentEntity, null, null,
                     false);
             commentRequestRepository.save(commentRequestEntity);
+
+            // Создаем задачу в Битрикс24
+            String title = "Заявка на проверку комментария #" + commentId;
+            String description = "Текст комментария: " + commentEntity.getContent();
+            bitrix24Service.createTask(title, description);
+
             transactionManager.commit(transaction);
         } catch (Exception e) {
             kafkaTemplate.send(topicNameDeletedComments, commentId);
             transactionManager.rollback(transaction);
         }
+    }
+
+    private CommentRequestDTO updateNoTransaction(CommentRequestDTO dto)
+            throws NullCommentException, NullContentException {
+        CommentRequestEntity entity = commentRequestRepository.findById(dto.getId())
+                .orElse(null);
+        if (entity == null || entity.getIsDeleted())
+            throw new NullCommentException();
+        if (dto.getIsChecked() == null)
+            throw new NullContentException();
+
+        entity.setIsChecked(dto.getIsChecked());
+        UserEntity checker = userRepository.findByLogin(
+                SecurityContextHolder.getContext().getAuthentication().getName());
+        entity.setChecker(checker);
+        if (dto.getIsChecked()) {
+            entity.getComment().setIsChecked(true);
+            commentRepository.save(entity.getComment());
+
+            // Обновляем задачу в Битрикс24 (завершаем)
+            bitrix24Service.updateTask(entity.getId().intValue(), "5"); // 5 - завершена
+        }
+
+        commentRequestRepository.save(entity);
+        return commentRequestConverter.fromEntity(entity);
     }
 
     private List<CommentRequestEntity> getAllEntity(int from) {
@@ -86,28 +120,6 @@ public class CommentRequestService {
             throw e;
         }
         return result;
-    }
-
-    private CommentRequestDTO updateNoTransaction(CommentRequestDTO dto)
-            throws NullCommentException, NullContentException {
-        CommentRequestEntity entity = commentRequestRepository.findById(dto.getId())
-                .orElse(null);
-        if (entity == null || entity.getIsDeleted())
-            throw new NullCommentException();
-        if (dto.getIsChecked() == null)
-            throw new NullContentException();
-
-        entity.setIsChecked(dto.getIsChecked());
-        UserEntity checker = userRepository.findByLogin(
-                SecurityContextHolder.getContext().getAuthentication().getName());
-        entity.setChecker(checker);
-        if (dto.getIsChecked()) {
-            entity.getComment().setIsChecked(true);
-            commentRepository.save(entity.getComment());
-        }
-
-        commentRequestRepository.save(entity);
-        return commentRequestConverter.fromEntity(entity);
     }
 
     public boolean delete(Long id) {

@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(basePackages = "lib.entity.dto.entity")
 @ComponentScan(basePackages = "lib")
 @ComponentScan
-@EnableAutoConfiguration
+
 public class OzonApplication {
 
 	public static void main(String[] args) {
