@@ -1,7 +1,8 @@
 package micro.service.admin.service;
 
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,7 @@ import lib.entity.dto.repository.UserRepository;
 
 @Service
 public class CommentRequestService {
+    private static final Logger log = LoggerFactory.getLogger(CommentRequestService.class);
 
     @Autowired
     private CommentRepository commentRepository;
@@ -49,24 +51,29 @@ public class CommentRequestService {
     private String topicNameDeletedComments;
 
     @Autowired
-    private Bitrix24Service bitrix24Service;
+    private Bitrix24JcaService bitrix24Service;
 
     @KafkaListener(topics = "${kafka.custom.topicname.comment}")
     public void createRequest(Long commentId) {
         TransactionStatus transaction = transactionManager.getTransaction(definition);
         try {
-            CommentEntity commentEntity = commentRepository.findById(commentId).get();
-            CommentRequestEntity commentRequestEntity = new CommentRequestEntity(null, commentEntity, null, null,
-                    false);
+            CommentEntity commentEntity = commentRepository.findById(commentId)
+                    .orElseThrow(() -> new RuntimeException("Comment not found"));
+            CommentRequestEntity commentRequestEntity = new CommentRequestEntity(null, commentEntity, null, null, false);
             commentRequestRepository.save(commentRequestEntity);
 
-            // Создаем задачу в Битрикс24
             String title = "Заявка на проверку комментария #" + commentId;
             String description = "Текст комментария: " + commentEntity.getContent();
-            bitrix24Service.createTask(title, description);
+            try {
+                String result = bitrix24Service.createTask(title, description);
+                log.debug("Bitrix24 task created: {}", result);
+            } catch (Exception e) {
+                log.error("Failed to create Bitrix24 task", e);
+            }
 
             transactionManager.commit(transaction);
         } catch (Exception e) {
+            log.error("Error creating comment request", e);
             kafkaTemplate.send(topicNameDeletedComments, commentId);
             transactionManager.rollback(transaction);
         }
@@ -75,22 +82,27 @@ public class CommentRequestService {
     private CommentRequestDTO updateNoTransaction(CommentRequestDTO dto)
             throws NullCommentException, NullContentException {
         CommentRequestEntity entity = commentRequestRepository.findById(dto.getId())
-                .orElse(null);
-        if (entity == null || entity.getIsDeleted())
-            throw new NullCommentException();
-        if (dto.getIsChecked() == null)
+                .orElseThrow(NullCommentException::new);
+
+        if (dto.getIsChecked() == null) {
             throw new NullContentException();
+        }
 
         entity.setIsChecked(dto.getIsChecked());
         UserEntity checker = userRepository.findByLogin(
                 SecurityContextHolder.getContext().getAuthentication().getName());
         entity.setChecker(checker);
+
         if (dto.getIsChecked()) {
             entity.getComment().setIsChecked(true);
             commentRepository.save(entity.getComment());
 
-            // Обновляем задачу в Битрикс24 (завершаем)
-            bitrix24Service.updateTask(entity.getId().intValue(), "5"); // 5 - завершена
+            try {
+                String result = bitrix24Service.updateTask(entity.getId().intValue(), "5");
+                log.debug("Bitrix24 task updated: {}", result);
+            } catch (Exception e) {
+                log.error("Failed to update Bitrix24 task", e);
+            }
         }
 
         commentRequestRepository.save(entity);
@@ -111,42 +123,48 @@ public class CommentRequestService {
 
     public CommentRequestDTO update(CommentRequestDTO dto) throws NullCommentException, NullContentException {
         TransactionStatus transaction = transactionManager.getTransaction(definition);
-        CommentRequestDTO result = null;
         try {
-            result = updateNoTransaction(dto);
+            CommentRequestDTO result = updateNoTransaction(dto);
             transactionManager.commit(transaction);
+            return result;
         } catch (Exception e) {
             transactionManager.rollback(transaction);
             throw e;
         }
-        return result;
     }
 
     public boolean delete(Long id) {
-        CommentRequestEntity entity = commentRequestRepository.findById(id)
-                .orElse(null);
-        if (entity == null || entity.getIsDeleted())
-            return false;
-        entity.setIsDeleted(true);
-        commentRequestRepository.save(entity);
-        return true;
+        return commentRequestRepository.findById(id)
+                .map(entity -> {
+                    entity.setIsDeleted(true);
+                    commentRequestRepository.save(entity);
+                    return true;
+                })
+                .orElse(false);
     }
 
     @Scheduled(fixedDelay = 10000)
     public void scheduleFixedDelayTask() {
         TransactionStatus transaction = transactionManager.getTransaction(definition);
-        for (int i = 0; i < commentRequestRepository.count(); i++) {
-            List<CommentRequestEntity> pack = getAllEntity(i);
+        try {
+            for (int i = 0; i < commentRequestRepository.count(); i++) {
+                List<CommentRequestEntity> pack = getAllEntity(i);
 
-            for (CommentRequestEntity request : pack.stream().filter(request -> request.getIsChecked() != null)
-                    .toList()) {
-                request.setIsDeleted(true);
-                commentRequestRepository.save(request);
+                for (CommentRequestEntity request : pack.stream()
+                        .filter(request -> request.getIsChecked() != null)
+                        .toList()) {
+                    request.setIsDeleted(true);
+                    commentRequestRepository.save(request);
 
-                if (!request.getIsChecked())
-                    kafkaTemplate.send(topicNameDeletedComments, request.getComment().getId());
+                    if (!request.getIsChecked()) {
+                        kafkaTemplate.send(topicNameDeletedComments, request.getComment().getId());
+                    }
+                }
             }
+            transactionManager.commit(transaction);
+        } catch (Exception e) {
+            log.error("Error in scheduled task", e);
+            transactionManager.rollback(transaction);
         }
-        transactionManager.commit(transaction);
     }
 }

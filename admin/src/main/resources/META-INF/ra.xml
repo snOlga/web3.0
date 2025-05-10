@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connector xmlns="https://jakarta.ee/xml/ns/jakartaee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/connector_2_1.xsd"
+           version="2.1">
+    <display-name>Bitrix24 Connector</display-name>
+    <vendor-name>Your Company</vendor-name>
+    <eis-type>Bitrix24 REST API</eis-type>
+    <resourceadapter-version>1.0</resourceadapter-version>
+
+    <resourceadapter>
+        <outbound-resourceadapter>
+            <connection-definition>
+                <managedconnectionfactory-class>
+                    micro.service.admin.jca.bitrix24.Bitrix24ManagedConnectionFactory
+                </managedconnectionfactory-class>
+                <connectionfactory-interface>
+                    micro.service.admin.jca.bitrix24.Bitrix24ConnectionFactory
+                </connectionfactory-interface>
+                <connectionfactory-impl-class>
+                    micro.service.admin.jca.bitrix24.Bitrix24ConnectionFactoryImpl
+                </connectionfactory-impl-class>
+                <connection-interface>
+                    micro.service.admin.jca.bitrix24.Bitrix24Connection
+                </connection-interface>
+                <connection-impl-class>
+                    micro.service.admin.jca.bitrix24.Bitrix24ConnectionImpl
+                </connection-impl-class>
+            </connection-definition>
+            <transaction-support>NoTransaction</transaction-support>
+            <reauthentication-support>false</reauthentication-support>
+        </outbound-resourceadapter>
+
+        <config-property>
+            <config-property-name>webhookUrl</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+            <config-property-value>${bitrix.webhook.url}</config-property-value>
+        </config-property>
+    </resourceadapter>
+</connector>
