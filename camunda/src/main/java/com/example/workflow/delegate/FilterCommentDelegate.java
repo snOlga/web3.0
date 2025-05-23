@@ -24,7 +24,6 @@ public class FilterCommentDelegate implements JavaDelegate {
         CommentDTO commentDTO = new CommentDTO(null, productId, authorId, content, isAnonymous, false, null, null);
         commentFilter.filter(commentDTO);
         execution.setVariable("commentDTO", commentDTO);
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!");
     }
 
 }

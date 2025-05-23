@@ -3,12 +3,12 @@
   <bpmn:collaboration id="Collaboration_1dmh2iy">
     <bpmn:participant id="Wiki_Change" name="sending comment" processRef="camunda-process" />
   </bpmn:collaboration>
-  <bpmn:process id="camunda-process" isExecutable="true" camunda:historyTimeToLive="180">
+  <bpmn:process id="camunda-process" isExecutable="true" camunda:candidateStarterGroups="admins" camunda:historyTimeToLive="180">
     <bpmn:laneSet id="LaneSet_06pu4rt">
       <bpmn:lane id="Lane_0wmnukc" name="Server">
         <bpmn:flowNodeRef>Activity_1op26nb</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_1fziny0</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_1ajv1fv</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1fziny0</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_1q3wnys" name="User">
         <bpmn:flowNodeRef>Activity_1bdzjya</bpmn:flowNodeRef>
@@ -28,15 +28,15 @@
       <bpmn:incoming>Flow_1vgl253</bpmn:incoming>
       <bpmn:outgoing>Flow_15i2g1g</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:task id="Activity_1fziny0" name="save comment">
-      <bpmn:incoming>Flow_15i2g1g</bpmn:incoming>
-      <bpmn:outgoing>Flow_0fuzm15</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:sequenceFlow id="Flow_15i2g1g" sourceRef="Activity_1op26nb" targetRef="Activity_1fziny0" />
     <bpmn:endEvent id="Event_1ajv1fv">
       <bpmn:incoming>Flow_0fuzm15</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0fuzm15" sourceRef="Activity_1fziny0" targetRef="Event_1ajv1fv" />
+    <bpmn:serviceTask id="Activity_1fziny0" name="save comment" camunda:class="com.example.workflow.delegate.SaveCommentDelegate">
+      <bpmn:incoming>Flow_15i2g1g</bpmn:incoming>
+      <bpmn:outgoing>Flow_0fuzm15</bpmn:outgoing>
+    </bpmn:serviceTask>
   </bpmn:process>
   <bpmn:message id="Message_0t7386l" name="saveChangesMessage" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -64,12 +64,11 @@
         <dc:Bounds x="500" y="300" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1fziny0_di" bpmnElement="Activity_1fziny0">
-        <dc:Bounds x="670" y="300" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1ajv1fv_di" bpmnElement="Event_1ajv1fv">
         <dc:Bounds x="842" y="322" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_05wys0m_di" bpmnElement="Activity_1fziny0">
+        <dc:Bounds x="670" y="300" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_17aphxm_di" bpmnElement="Flow_17aphxm">
         <di:waypoint x="278" y="170" />

@@ -13,10 +13,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan(basePackages = "lib")
 @ComponentScan
 @EnableScheduling
-public class Application {
+public class CamundaApplication {
 
   public static void main(String... args) {
-    SpringApplication.run(Application.class, args);
+    SpringApplication.run(CamundaApplication.class, args);
   }
 
 }

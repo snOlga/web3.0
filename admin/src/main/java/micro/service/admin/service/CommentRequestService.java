@@ -49,7 +49,8 @@ public class CommentRequestService {
     private String topicNameDeletedComments;
 
     @KafkaListener(topics = "${kafka.custom.topicname.comment}")
-    public void createRequest(Long commentId) {
+    public void createRequest(Long commentId) throws InterruptedException {
+        Thread.sleep(100);
         TransactionStatus transaction = transactionManager.getTransaction(definition);
         try {
             CommentEntity commentEntity = commentRepository.findById(commentId).get();
