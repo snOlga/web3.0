@@ -1,4 +1,4 @@
-package lib.entity.dto.security;
+package web.ozon.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

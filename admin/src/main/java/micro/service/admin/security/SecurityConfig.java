@@ -1,4 +1,4 @@
-package lib.entity.dto.security;
+package micro.service.admin.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

@@ -1,19 +1,59 @@
 {
   "components": [
     {
-      "label": "write name",
-      "type": "textfield",
-      "id": "Field_1ntgozd",
-      "key": "name",
+      "label": "product id",
+      "type": "number",
+      "layout": {
+        "row": "Row_0lagdgv",
+        "columns": null
+      },
+      "id": "Field_044uhsh",
+      "key": "product_id",
       "validate": {
         "required": true
-      },
-      "layout": {
-        "row": "Row_02f3hpx"
       }
     },
     {
-      "label": "greeting me",
+      "label": "author id",
+      "type": "number",
+      "layout": {
+        "row": "Row_0lagdgv",
+        "columns": null
+      },
+      "id": "Field_1pnayn4",
+      "key": "author_id",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "comment content",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_02f3hpx",
+        "columns": null
+      },
+      "id": "Field_1qvc98p",
+      "key": "content",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "is anonymous",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_1prh3aj",
+        "columns": null
+      },
+      "id": "Field_1pr1bdo",
+      "key": "is_anonymous",
+      "validate": {
+        "required": false
+      }
+    },
+    {
+      "label": "send",
       "action": "submit",
       "type": "button",
       "id": "Field_1synj4e",
@@ -24,7 +64,7 @@
     }
   ],
   "type": "default",
-  "id": "Form_1",
+  "id": "comment_form",
   "exporter": {
     "name": "Camunda Modeler",
     "version": "5.35.0"
