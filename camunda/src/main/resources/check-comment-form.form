@@ -1,0 +1,55 @@
+{
+  "components": [
+    {
+      "label": "Comment request id",
+      "type": "number",
+      "layout": {
+        "row": "Row_0qa4quu",
+        "columns": 3
+      },
+      "id": "Field_1bn2znx",
+      "key": "commentRequestId",
+      "readonly": "on"
+    },
+    {
+      "label": "Comment content",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0qa4quu",
+        "columns": null
+      },
+      "id": "Field_0pcwh4u",
+      "key": "commentContent",
+      "readonly": "on"
+    },
+    {
+      "label": "it's ok",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_1u2ckx7",
+        "columns": null
+      },
+      "id": "Field_1s97q4p",
+      "key": "commentIsOk"
+    },
+    {
+      "label": "next",
+      "action": "submit",
+      "type": "button",
+      "layout": {
+        "row": "Row_0bvcw28",
+        "columns": null
+      },
+      "id": "Field_19hto6r"
+    }
+  ],
+  "type": "default",
+  "id": "check_comment_form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.35.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 18
+}

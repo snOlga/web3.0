@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "comment_requests")
-@Where(clause = "is_deleted = false")
+// @Where(clause = "is_deleted = false")
 public class CommentRequestEntity {
 
     @Id

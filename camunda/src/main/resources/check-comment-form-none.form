@@ -1,0 +1,22 @@
+{
+  "components": [
+    {
+      "text": "None of them!",
+      "type": "text",
+      "layout": {
+        "row": "Row_0nrqtlz",
+        "columns": null
+      },
+      "id": "Field_1x1kd7m"
+    }
+  ],
+  "type": "default",
+  "id": "check_comment_form_none",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.35.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.23.0",
+  "schemaVersion": 18
+}

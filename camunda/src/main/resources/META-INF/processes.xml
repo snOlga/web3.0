@@ -5,8 +5,11 @@
   <process-archive name="loan-approval">
     <process-engine>default</process-engine>
     
-    <resource>process.bpmn</resource>
-    <resource>form_1.form</resource>
+    <resource>sending-comment-process.bpmn</resource>
+    <resource>sending-comment-form.form</resource>
+    <resource>check-comment-process.bpmn</resource>
+    <resource>check-comment-form.form</resource>
+    <resource>check-comment-form-none.form</resource>
     
     <properties>
       <property name="isDeleteUponUndeploy">false</property>
